@@ -94,7 +94,12 @@ def main():
 
 
     Dataset_string = "LostAndFound"
-    model = load_my_state_dict(model, torch.load(weightspath, map_location=lambda storage, loc: storage), args.model)
+    state_dict = torch.load(weightspath, map_location=lambda storage, loc: storage)
+    if args.model == 'ERFNet':
+        model = load_my_state_dict(model, state_dict, args.model)
+    elif args.model == 'BiSeNet':
+        state_dict = {f"module.{k}": v if not k.startswith("module.") else v for k, v in state_dict.items()}
+        model.load_state_dict(state_dict)
     print("Model and weights LOADED successfully")
     model.eval()
 
