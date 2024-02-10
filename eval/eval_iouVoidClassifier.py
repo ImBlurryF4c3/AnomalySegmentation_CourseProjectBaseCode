@@ -113,15 +113,15 @@ def main(args):
           inputs = Variable(images)
           with torch.no_grad():
               outputs = model(inputs)
-
+              void_outputs = outputs[0:19, :, :]
           # Seleziona le previsioni del modello in base al metodo specificato dalla riga di comando
           if args.method == 'msp':
-              softmax_output = F.softmax(outputs / float(args.temperature), dim=0)
-              predicted_labels = torch.argmax(softmax_output, dim=0).unsqueeze(0).data
+              softmax_output = F.softmax(void_outputs / float(args.temperature), dim=0)
+              predicted_labels = torch.argmax(softmax_output, dim=0).unsqueeze(1).data
           elif args.method == 'maxLogit':
-              predicted_labels = torch.argmax(outputs, dim=0).unsqueeze(0).data
+              predicted_labels = torch.argmax(void_outputs, dim=0).unsqueeze(1).data
           elif args.method == 'maxEntr':
-              predicted_labels = torch.argmax(F.softmax(outputs, dim=0), dim=0).unsqueeze(1).data
+              predicted_labels = torch.argmax(F.softmax(void_outputs, dim=0), dim=0).unsqueeze(1).data
 
           iouEvalVal.addBatch(predicted_labels, labels)
 
@@ -229,7 +229,7 @@ def find_best_temperature(loader, model, cpu, t_values, method,name_model):
     return best_temperature
 
 def evaluate_model(loader, model, temperature, cpu):
-    iouEvalVal = iouEval(NUM_CLASSES)
+    iouEvalVal = iouEval(NUM_CLASSES,ignoreIndex=-1)
 
     start = time.time()
 
