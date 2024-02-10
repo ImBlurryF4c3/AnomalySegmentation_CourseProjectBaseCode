@@ -147,9 +147,17 @@ def evaluate_model(args):
             ood_gts = np.where((ood_gts == 2), 1, ood_gts)
         if "LostAndFound" in pathGT:
             Dataset_string = "Lost & Found"
-            ood_gts = np.where((ood_gts == 0), 255, ood_gts)
-            ood_gts = np.where((ood_gts == 1), 0, ood_gts)
-            ood_gts = np.where((ood_gts > 1) & (ood_gts < 201), 1, ood_gts)
+            #remapping taken from StreetHazards because of some bugs in the orginal implementation
+            # ood_gts = np.where((ood_gts == 0), 255, ood_gts)
+            # ood_gts = np.where((ood_gts == 1), 0, ood_gts)
+            # ood_gts = np.where((ood_gts > 1) & (ood_gts < 201), 1, ood_gts)
+
+            # new implementation
+            print("entra in LostAndFound")
+            ood_gts = np.where((ood_gts == 14), 255, ood_gts)
+            ood_gts = np.where((ood_gts < 20), 0, ood_gts)
+            ood_gts = np.where((ood_gts == 255), 1, ood_gts)
+            
 
         if "Streethazard" in pathGT:
             ood_gts = np.where((ood_gts == 14), 255, ood_gts)
