@@ -113,7 +113,7 @@ def evaluate_model(args):
     model.eval()
     temperature = float(args.temperature)
     for path in glob.glob(os.path.expanduser(str(args.input[0]))):
-        #print(path)
+        print(path)
         images = torch.from_numpy(np.array(Image.open(path).convert('RGB'))).unsqueeze(0).float()
         images = images.permute(0, 3, 1, 2)
         with torch.no_grad():
