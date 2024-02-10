@@ -145,7 +145,7 @@ def evaluate_model(args):
         if "RoadAnomaly" in pathGT:
             Dataset_string = "Road Anomaly"
             ood_gts = np.where((ood_gts == 2), 1, ood_gts)
-        if "LostAndFound" in pathGT:
+        if "fs_static" in pathGT:
             Dataset_string = "Lost & Found"
             #remapping taken from StreetHazards because of some bugs in the orginal implementation
             # ood_gts = np.where((ood_gts == 0), 255, ood_gts)
