@@ -29,7 +29,7 @@ torch.backends.cudnn.benchmark = True
 
 #custom function to load model when not all dict elements
 def load_my_state_dict(model, state_dict, model_name):
-    if model_name == 'erfnet':
+    if model_name == 'ERFNet' :
         own_state = model.state_dict()
         for name, param in state_dict.items():
             if name not in own_state:
@@ -94,7 +94,12 @@ def main():
 
 
     Dataset_string = "LostAndFound"
-    model = load_my_state_dict(model, torch.load(weightspath, map_location=lambda storage, loc: storage), args.model)
+    state_dict =  torch.load(weightspath, map_location=lambda storage, loc: storage)
+    if args.model == 'BiSeNet':
+        state_dict = {f"module.{k}": v if not k.startswith("module.") else v for k, v in state_dict.items()}
+        model.load_state_dict(state_dict)
+    else:
+        model = load_my_state_dict(model, state_dict, args.model)
     print("Model and weights LOADED successfully")
     model.eval()
 
