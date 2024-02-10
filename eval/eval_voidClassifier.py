@@ -29,7 +29,7 @@ torch.backends.cudnn.benchmark = True
 
 #custom function to load model when not all dict elements
 def load_my_state_dict(model, state_dict, model_name):
-    if model_name == 'erfnet':
+    if model_name == 'ERFNet':
         own_state = model.state_dict()
         for name, param in state_dict.items():
             if name not in own_state:
@@ -93,7 +93,7 @@ def main():
             raise Exception("Impossible to eval this model without cuda")
 
 
-    Dataset_string = "LostAndFound"
+    Dataset_string = "LostAndFound" # Questo si può cambiare suppongo
     state_dict = torch.load(weightspath, map_location=lambda storage, loc: storage)
     if args.model == 'ERFNet':
         model = load_my_state_dict(model, state_dict, args.model)
