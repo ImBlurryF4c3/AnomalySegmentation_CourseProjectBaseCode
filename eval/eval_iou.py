@@ -20,6 +20,12 @@ from torchvision.transforms import ToTensor, ToPILImage
 
 from dataset import cityscapes
 from erfnet import ERFNet
+########## Aggiunta percorso per la ricerca delle varie reti ############
+import sys
+sys.path.insert(0, './otherModel')
+from BiSeNetV1 import BiseNet
+print('Ha FUNZIONATO')
+##############################
 from transform import Relabel, ToLabel, Colorize
 from iouEval import iouEval, getColorEntry
 
@@ -95,9 +101,9 @@ def main(args):
           # Seleziona le previsioni del modello in base al metodo specificato dalla riga di comando
           if args.method == 'msp':
               softmax_output = F.softmax(outputs / float(args.temperature), dim=0)
-              predicted_labels = torch.argmax(softmax_output, dim=0).unsqueeze(0).data
+              predicted_labels = torch.argmax(softmax_output, dim=0).unsqueeze(1).data
           elif args.method == 'maxLogit':
-              predicted_labels = torch.argmax(outputs, dim=0).unsqueeze(0).data
+              predicted_labels = torch.argmax(outputs, dim=0).unsqueeze(1).data
           elif args.method == 'maxEntr':
               predicted_labels = torch.argmax(F.softmax(outputs, dim=0), dim=0).unsqueeze(1).data
 
@@ -237,8 +243,6 @@ def evaluate_model(loader, model, temperature, cpu):
 if __name__ == '__main__':
     parser = ArgumentParser()
 
-    parser.add_argument('--state')
-
     parser.add_argument('--loadDir',default="../trained_models/")
     parser.add_argument('--loadWeights', default="erfnet_pretrained.pth")
     parser.add_argument('--loadModel', default="erfnet.py")
@@ -248,6 +252,6 @@ if __name__ == '__main__':
     parser.add_argument('--batch-size', type=int, default=1)
     parser.add_argument('--cpu', action='store_true')
     parser.add_argument('--method', default='msp')  # Aggiunge l'argomento method con valore predefinito 'msp'
-    parser.add_argument('--temperature', type=float, default=1.0)  # Aggiunge l'argomento temperature con valore predefinito -1
+    parser.add_argument('--temperature', type=float, default=1.0)  # Aggiunge l'argomento temperature con valore predefinito 1
     
     main(parser.parse_args())
