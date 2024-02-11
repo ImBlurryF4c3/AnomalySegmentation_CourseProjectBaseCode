@@ -100,6 +100,7 @@ def main():
         model.load_state_dict(state_dict)
     else:
         model = load_my_state_dict(model, state_dict, args.model)
+
     print("Model and weights LOADED successfully")
     model.eval()
 
