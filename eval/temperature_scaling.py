@@ -25,7 +25,7 @@ class ModelWithTemperature(nn.Module):
         Perform temperature scaling on logits
         """
         # Expand temperature to match the size of logits
-        temperature = self.temperature.unsqueeze(1).expand(logits.size(0), logits.size(1))
+        temperature = self.temperature.unsqueeze(1).unsqueeze(2).unsqueeze(3)
         return logits / temperature
 
     # This function probably should live outside of this class, but whatever
@@ -43,22 +43,25 @@ class ModelWithTemperature(nn.Module):
         logits_list = []
         labels_list = []
         with torch.no_grad():
-            for input, label,_,_ in valid_loader:
-                input = input.cuda()
-                logits = self.model(input)
-                logits_list.append(logits)
-                labels_list.append(label)
+          for input, label in valid_loader:
+            input = input.cuda()
+            logits = self.model(input)
+            logits_list.append(logits)
+            # Convert labels to LongTensor
+            labels_list.append(label.long())  # Convert labels to LongTensor here
             logits = torch.cat(logits_list).cuda()
             labels = torch.cat(labels_list).cuda()
+        labels = labels.long()
 
         # Calculate NLL and ECE before temperature scaling
         before_temperature_nll = nll_criterion(logits, labels).item()
         before_temperature_ece = ece_criterion(logits, labels).item()
+
         print('Before temperature - NLL: %.3f, ECE: %.3f' % (before_temperature_nll, before_temperature_ece))
 
         # Next: optimize the temperature w.r.t. NLL
         optimizer = optim.LBFGS([self.temperature], lr=0.01, max_iter=50)
-
+        torch.cuda.empty_cache()
         def eval():
             optimizer.zero_grad()
             loss = nll_criterion(self.temperature_scale(logits), labels)

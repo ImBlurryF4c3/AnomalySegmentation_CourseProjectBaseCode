@@ -5,7 +5,7 @@
 
 import numpy as np
 import os
-
+import torch
 from PIL import Image
 
 from torch.utils.data import Dataset
@@ -79,10 +79,9 @@ class cityscapes(Dataset):
         self.target_transform = target_transform
 
     def __getitem__(self, index):
+
         filename = self.filenames[index]
         filenameGt = self.filenamesGt[index]
-
-        #print(filename)
 
         with open(image_path_city(self.images_root, filename), 'rb') as f:
             image = load_image(f).convert('RGB')
@@ -94,7 +93,19 @@ class cityscapes(Dataset):
         if self.target_transform is not None:
             label = self.target_transform(label)
 
+        # Converti l'etichetta in un array numpy
+        label_np = np.array(label)
+
+        # Assicurati che l'etichetta sia bidimensionale
+        if len(label_np.shape) > 2:
+            # Riduci la dimensione dell'etichetta a 2 dimensioni
+            label_np = label_np.squeeze()
+
+        # Converti l'etichetta in un tensore PyTorch
+        label = torch.from_numpy(label_np)
+
         return image, label
+
 
 
     def __len__(self):
