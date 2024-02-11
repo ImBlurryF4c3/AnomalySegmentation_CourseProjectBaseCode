@@ -84,6 +84,7 @@ def main():
     parser.add_argument('--temperature', default=1.0)
     ####
     args = parser.parse_args()
+    evaluate_model(args) 
     
 
 
