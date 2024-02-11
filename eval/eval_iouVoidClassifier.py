@@ -135,13 +135,13 @@ def main(args):
 
           #sostituisci tutti i valori sotto 19 in 0 e sostituisci quelli a 19 in 1
           labels_void = torch.where(labels == 19, 1, 0)
-          print(labels_void.size())
+          #print(labels_void.size())
         #   labels_void = labels_void[:, 0:1, :, :]
           #la dimensione 1 ora deve avere lunghezza 1 (perchè tanto rappresento solo una classe)
           #labels_void = labels_void.unsqueeze(1)
 
 
-          iouEvalVal.addBatch(predicted_labels, labels)
+          iouEvalVal.addBatch(predicted_labels_void, labels_void)
 
           filenameSave = filename[0].split("leftImg8bit/")[1] 
 
