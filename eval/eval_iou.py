@@ -22,9 +22,11 @@ from dataset import cityscapes
 from erfnet import ERFNet
 ########## Aggiunta percorso per la ricerca delle varie reti ############
 import sys
+
 sys.path.insert(0, './otherModel')
-from BiSeNetV1 import BiseNet
-print('Ha FUNZIONATO')
+from eval.otherModel.BiSeNetV1 import BiSeNetV1
+
+#print('Ha FUNZIONATO')
 ##############################
 from transform import Relabel, ToLabel, Colorize
 from iouEval import iouEval, getColorEntry
