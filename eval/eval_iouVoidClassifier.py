@@ -133,6 +133,13 @@ def main(args):
 
           predicted_labels_void = torch.where(predicted_labels == 19, 1, 0)
 
+          #sostituisci tutti i valori sotto 19 in 0 e sostituisci quelli a 19 in 1
+          labels_void = torch.where(labels == 19, 1, 0)
+          print(labels_void.size())
+        #   labels_void = labels_void[:, 0:1, :, :]
+          #la dimensione 1 ora deve avere lunghezza 1 (perchè tanto rappresento solo una classe)
+          #labels_void = labels_void.unsqueeze(1)
+
 
           iouEvalVal.addBatch(predicted_labels, labels)
 
