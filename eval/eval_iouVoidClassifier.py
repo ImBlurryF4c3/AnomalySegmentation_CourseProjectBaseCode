@@ -19,9 +19,9 @@ from torchvision.transforms import Compose, CenterCrop, Normalize, Resize
 from torchvision.transforms import ToTensor, ToPILImage
 
 from dataset import cityscapes
-from erfnet import ERFNet
+from otherModel.erfnet import ERFNet
 from otherModel.BiSeNetV1 import BiSeNetV1
-#from otherModel.ENet import ENet
+from otherModel.ENet import ENet
 from transform import Relabel, ToLabel, Colorize
 from iouEval import iouEval, getColorEntry
 
@@ -38,7 +38,9 @@ target_transform_cityscapes = Compose([
     ToLabel(),
     Relabel(255, 19),   #ignore label to 19
 ])
-def load_my_state_dict(model, state_dict):  #custom function to load model when not all dict elements
+#custom function to load model when not all dict elements
+def load_my_state_dict(model, state_dict, model_name):
+    if model_name == 'ERFNet' :
         own_state = model.state_dict()
         for name, param in state_dict.items():
             if name not in own_state:
@@ -49,7 +51,9 @@ def load_my_state_dict(model, state_dict):  #custom function to load model when 
                     continue
             else:
                 own_state[name].copy_(param)
-        return model
+    else:
+        model = model.load_state_dict(state_dict)
+    return model
 def main(args):
 
     modelpath = args.loadDir + args.loadModel
@@ -80,6 +84,10 @@ def main(args):
 
 
     if args.model == 'BiSeNet':
+        state_dict = {f"module.{k}": v if not k.startswith("module.") else v for k, v in state_dict.items()}
+        model.load_state_dict(state_dict)
+    elif args.model == 'ENet':
+        state_dict = state_dict['state_dict']
         state_dict = {f"module.{k}": v if not k.startswith("module.") else v for k, v in state_dict.items()}
         model.load_state_dict(state_dict)
     else:
@@ -139,7 +147,7 @@ def main(args):
         #   labels_void = labels_void[:, 0:1, :, :]
           #la dimensione 1 ora deve avere lunghezza 1 (perchè tanto rappresento solo una classe)
           #labels_void = labels_void.unsqueeze(1)
-
+          
 
           iouEvalVal.addBatch(predicted_labels_void, labels_void)
 
