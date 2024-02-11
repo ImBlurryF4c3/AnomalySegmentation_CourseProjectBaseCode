@@ -80,51 +80,47 @@ def main(args):
         print ("Error: datadir could not be loaded")
 
     loader = DataLoader(cityscapes(args.datadir, input_transform_cityscapes, target_transform_cityscapes, subset=args.subset), num_workers=args.num_workers, batch_size=args.batch_size, shuffle=False)
-    t_values = [0.01, 0.04, 0.05, 0.08, 0.1] 
-    if float(args.temperature) == -1:  # Se temperature è -1, cerca il miglior valore tra t_values
-        best_temperature = find_best_temperature(loader, model, args.cpu, t_values, args.method)
-        print(f"Best temperature found: {best_temperature}")
-        args.temperature = best_temperature
-    else :
-      
-      iouEvalVal = iouEval(NUM_CLASSES)
+   
+    # else :
+    
+    iouEvalVal = iouEval(NUM_CLASSES)
 
-      start = time.time()
+    start = time.time()
 
-      for step, (images, labels, filename, filenameGt) in enumerate(loader):
-          if (not args.cpu):
-              images = images.cuda()
-              labels = labels.cuda()
+    for step, (images, labels, filename, filenameGt) in enumerate(loader):
+        if (not args.cpu):
+            images = images.cuda()
+            labels = labels.cuda()
 
-          inputs = Variable(images)
-          with torch.no_grad():
-              outputs = model(inputs)
+        inputs = Variable(images)
+        with torch.no_grad():
+            outputs = model(inputs)
 
-          # Seleziona le previsioni del modello in base al metodo specificato dalla riga di comando
-          if args.method == 'msp':
-              softmax_output = F.softmax(outputs / float(args.temperature), dim=1)
-              predicted_labels = torch.argmax(softmax_output, dim=1).unsqueeze(1).data
-          elif args.method == 'maxLogit':
-              predicted_labels = torch.argmax(outputs, dim=1).unsqueeze(1).data
-          elif args.method == 'maxEntr':
-              predicted_labels = torch.argmax(F.softmax(outputs, dim=1), dim=1).unsqueeze(1).data
+        # Seleziona le previsioni del modello in base al metodo specificato dalla riga di comando
+        if args.method == 'msp':
+            softmax_output = F.softmax(outputs / float(args.temperature), dim=1)
+            predicted_labels = torch.argmax(softmax_output, dim=1).unsqueeze(1).data
+        elif args.method == 'maxLogit':
+            predicted_labels = torch.argmax(outputs, dim=1).unsqueeze(1).data
+        elif args.method == 'maxEntr':
+            predicted_labels = torch.argmax(F.softmax(outputs, dim=1), dim=1).unsqueeze(1).data
 
-          iouEvalVal.addBatch(predicted_labels, labels)
+        iouEvalVal.addBatch(predicted_labels, labels)
 
-          filenameSave = filename[0].split("leftImg8bit/")[1] 
+        filenameSave = filename[0].split("leftImg8bit/")[1] 
 
-          #print (step, filenameSave)
+        #print (step, filenameSave)
 
 
-      iouVal, iou_classes = iouEvalVal.getIoU()
+    iouVal, iou_classes = iouEvalVal.getIoU()
 
-      iou_classes_str = []
-      for i in range(iou_classes.size(0)):
+    iou_classes_str = []
+    for i in range(iou_classes.size(0)):
         #iouStr = getColorEntry(iou_classes[i])+'{:0.2f}'.format(iou_classes[i]*100) + '\033[0m'
         iouStr = '{:0.2f}'.format(iou_classes[i]*100)
         iou_classes_str.append(iouStr)
 
-      if not os.path.exists('mIoU_results.txt'):
+    if not os.path.exists('mIoU_results.txt'):
         open('mIoU_results.txt', 'w').close()
     file = open('mIoU_results.txt', 'a')
 
@@ -158,89 +154,7 @@ def main(args):
     file.write ("MEAN IoU: "+iouStr+"% with method: "+str(args.method) + " with temperature: "+ str(args.temperature))
     print ("MEAN IoU: "+iouStr+"% with method: "+str(args.method) + " with temperature: "+ str(args.temperature))
     
-def find_best_temperature(loader, model, cpu, t_values, method):
-    best_temperature = None
-    best_miou = -1
 
-    for temperature in t_values:
-        print(f"Evaluating with temperature = {temperature}")
-        iouVal, iouClasses = evaluate_model(loader, model, temperature, cpu)
-        print(f"Mean IoU with temperature = {temperature}: {iouVal}")
-
-        if iouVal > best_miou:
-            best_miou = iouVal
-            best_temperature = temperature
-            best_classes=iouClasses
-    
-
-    best_class = []
-    for i in range(best_classes.size(0)):
-        #iouStr = getColorEntry(iou_classes[i])+'{:0.2f}'.format(iou_classes[i]*100) + '\033[0m'
-        iouStr = '{:0.2f}'.format(best_classes[i]*100)
-        best_class.append(iouStr)
-    if not os.path.exists('mIoU_results.txt'):
-      open('mIoU_results.txt', 'w').close()
-    file = open('mIoU_results.txt', 'a')
-
-    file.write("================================ Model: ERFNET ================================\n")
-    #print("TOTAL IOU: ", iou * 100, "%")
-    file.write("Per-Class IoU:\n")
-    file.write("Road -----> " + best_class[0])
-    file.write("\nsidewalk -----> " + best_class[1])
-    file.write("\nbuilding -----> " + best_class[2])
-    file.write("\nwall -----> " + best_class[3])
-    file.write("\nfence -----> " + best_class[4])
-    file.write("\npole -----> " + best_class[5])
-    file.write("\ntraffic light -----> " + best_class[6])
-    file.write("\ntraffic sign -----> " + best_class[7])
-    file.write("\nvegetation -----> " + best_class[8])
-    file.write("\nterrain -----> " + best_class[9])
-    file.write("\nsky -----> " + best_class[10])
-    file.write("\nperson -----> " + best_class[11])
-    file.write("\nrider -----> " + best_class[12])
-    file.write("\ncar -----> " + best_class[13])
-    file.write("\ntruck -----> " + best_class[14])
-    file.write("\nbus -----> " + best_class[15])
-    file.write("\ntrain -----> " + best_class[16])
-    file.write("\nmotorcycle -----> " + best_class[17])
-    file.write("\nbicycle -----> " + best_class[18])
-    file.write("\n=======================================\n")
-    #iouStr = getColorEntry(iouVal)+'{:0.2f}'.format(iouVal*100) + '\033[0m'
-    iouStr = '{:0.2f}'.format(iouVal*100)
-    file.write ("MEAN IoU: "+iouStr+"% with method: "+str(method) + " with temperature: "+ str(best_temperature))
-    print ("MEAN IoU: "+iouStr+"% with method: "+str(method) + " with temperature: "+ str(best_temperature))
-    
-
-    return best_temperature
-
-def evaluate_model(loader, model, temperature, cpu):
-    iouEvalVal = iouEval(NUM_CLASSES)
-
-    start = time.time()
-
-    for step, (images, labels, filename, filenameGt) in enumerate(loader):
-        if (not cpu):
-            images = images.cuda()
-            labels = labels.cuda()
-
-        inputs = Variable(images)
-        with torch.no_grad():
-            outputs = model(inputs)
-
-        # Seleziona le previsioni del modello in base al metodo specificato dalla riga di comando
-        softmax_output = F.softmax(outputs / temperature, dim=1)
-        predicted_labels = torch.argmax(softmax_output, dim=1).unsqueeze(1).data
-
-        iouEvalVal.addBatch(predicted_labels, labels)
-
-        filenameSave = filename[0].split("leftImg8bit/")[1] 
-
-        #print (step, filenameSave)
-
-    iouVal, iou_classes = iouEvalVal.getIoU()
-    print(f"Took {time.time()-start} seconds")
-
-    return iouVal, iou_classes
 
 if __name__ == '__main__':
     parser = ArgumentParser()
