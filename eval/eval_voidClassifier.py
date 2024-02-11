@@ -128,6 +128,7 @@ def main():
                 result = model(images)[0]
             else:
                 result = model(images)
+
         anomaly_result = result.squeeze(0).data.cpu().numpy()[19,:,:]   #we are using the last channel for anomaly_result which is the background
         pathGT = path.replace("images", "labels_masks")                
         if "RoadObsticle21" in pathGT:
@@ -142,10 +143,14 @@ def main():
 
         if "RoadAnomaly" in pathGT:
             ood_gts = np.where((ood_gts==2), 1, ood_gts)
-        if "LostAndFound" in pathGT:
-            ood_gts = np.where((ood_gts==0), 255, ood_gts)
-            ood_gts = np.where((ood_gts==1), 0, ood_gts)
-            ood_gts = np.where((ood_gts>1)&(ood_gts<201), 1, ood_gts)
+        if "FS_LostFound_full" in pathGT:
+            Dataset_string = "Lost & Found"
+            # ood_gts = np.where((ood_gts==0), 255, ood_gts)
+            # ood_gts = np.where((ood_gts==1), 0, ood_gts)
+            # ood_gts = np.where((ood_gts>1)&(ood_gts<201), 1, ood_gts)
+            ood_gts = np.where((ood_gts == 14), 255, ood_gts)
+            ood_gts = np.where((ood_gts < 20), 0, ood_gts)
+            ood_gts = np.where((ood_gts == 255), 1, ood_gts)
 
         if "Streethazard" in pathGT:
             ood_gts = np.where((ood_gts==14), 255, ood_gts)
