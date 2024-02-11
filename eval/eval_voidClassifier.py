@@ -98,7 +98,12 @@ def main():
     if args.model == 'BiSeNet':
         state_dict = {f"module.{k}": v if not k.startswith("module.") else v for k, v in state_dict.items()}
         model.load_state_dict(state_dict)
+    elif args.model == 'ENet':
+        state_dict = state_dict['state_dict']
+        state_dict = {f"module.{k}": v if not k.startswith("module.") else v for k, v in state_dict.items()}
+        model.load_state_dict(state_dict)
     else:
+        print(state_dict)
         model = load_my_state_dict(model, state_dict, args.model)
 
     print("Model and weights LOADED successfully")
@@ -132,16 +137,20 @@ def main():
         anomaly_result = result.squeeze(0).data.cpu().numpy()[19,:,:]   #we are using the last channel for anomaly_result which is the background
         pathGT = path.replace("images", "labels_masks")                
         if "RoadObsticle21" in pathGT:
-           pathGT = pathGT.replace("webp", "png")
+            Dataset_string = "RoadObsticle21"
+            pathGT = pathGT.replace("webp", "png")
         if "fs_static" in pathGT:
-           pathGT = pathGT.replace("jpg", "png")                
+            Dataset_string = "fs_static"
+            pathGT = pathGT.replace("jpg", "png")                
         if "RoadAnomaly" in pathGT:
+
            pathGT = pathGT.replace("jpg", "png")  
 
         mask = Image.open(pathGT)
         ood_gts = np.array(mask)
 
         if "RoadAnomaly" in pathGT:
+            Dataset_string = "RoadAnomaly"
             ood_gts = np.where((ood_gts==2), 1, ood_gts)
         if "FS_LostFound_full" in pathGT:
             Dataset_string = "Lost & Found"
