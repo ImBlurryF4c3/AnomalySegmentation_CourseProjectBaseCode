@@ -116,12 +116,12 @@ def main(args):
               void_outputs = outputs[0:19, :, :]
           # Seleziona le previsioni del modello in base al metodo specificato dalla riga di comando
           if args.method == 'msp':
-              softmax_output = F.softmax(void_outputs / float(args.temperature), dim=0)
-              predicted_labels = torch.argmax(softmax_output, dim=0).unsqueeze(1).data
+              softmax_output = F.softmax(void_outputs / float(args.temperature), dim=1)
+              predicted_labels = torch.argmax(softmax_output, dim=1).unsqueeze(1).data
           elif args.method == 'maxLogit':
-              predicted_labels = torch.argmax(void_outputs, dim=0).unsqueeze(1).data
+              predicted_labels = torch.argmax(void_outputs, dim=1).unsqueeze(1).data
           elif args.method == 'maxEntr':
-              predicted_labels = torch.argmax(F.softmax(void_outputs, dim=0), dim=0).unsqueeze(1).data
+              predicted_labels = torch.argmax(F.softmax(void_outputs, dim=1), dim=1).unsqueeze(1).data
 
           iouEvalVal.addBatch(predicted_labels, labels)
 
@@ -243,8 +243,8 @@ def evaluate_model(loader, model, temperature, cpu):
             outputs = model(inputs)
 
         # Seleziona le previsioni del modello in base al metodo specificato dalla riga di comando
-        softmax_output = F.softmax(outputs / temperature, dim=0)
-        predicted_labels = torch.argmax(softmax_output, dim=0).unsqueeze(1).data
+        softmax_output = F.softmax(outputs / temperature, dim=1)
+        predicted_labels = torch.argmax(softmax_output, dim=1).unsqueeze(1).data
 
         iouEvalVal.addBatch(predicted_labels, labels)
 
