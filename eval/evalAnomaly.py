@@ -99,37 +99,37 @@ def evaluate_model(args):
     if float(args.temperature) == -1:
         model = ModelWithTemperature(model)
         # Definisci le trasformazioni per le immagini e le etichette
-        # input_transform = transforms.Compose([
-        #     transforms.Resize((256, 256)),
-        #     transforms.ToTensor(),
-        #     transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
-        # ])
-        # target_transform = transforms.Compose([
-        #     transforms.Resize((256, 256), interpolation=Image.NEAREST),
-        #     transforms.ToTensor()
-        # ])
-
-        image_transform = ToPILImage()
-        input_transform_cityscapes = Compose([
-            Resize(512, Image.BILINEAR),
-            ToTensor(),
+        input_transform = transforms.Compose([
+            transforms.Resize((256, 256)),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
         ])
-        target_transform_cityscapes = Compose([
-            Resize(512, Image.NEAREST),
-            ToLabel(),
-            Relabel(255, 19),   #ignore label to 19
+        target_transform = transforms.Compose([
+            transforms.Resize((256, 256), interpolation=Image.NEAREST),
+            transforms.ToTensor()
         ])
 
-        loader = DataLoader(cityscapes(args.datadir, input_transform_cityscapes, target_transform_cityscapes, subset=args.subset), num_workers=args.num_workers, batch_size=args.batch_size, shuffle=False)
+        # image_transform = ToPILImage()
+        # input_transform_cityscapes = Compose([
+        #     Resize(512, Image.BILINEAR),
+        #     ToTensor(),
+        # ])
+        # target_transform_cityscapes = Compose([
+        #     Resize(512, Image.NEAREST),
+        #     ToLabel(),
+        #     Relabel(255, 19),   #ignore label to 19
+        # ])
+
+        # validation_loader = DataLoader(cityscapes(args.datadir, input_transform_cityscapes, target_transform_cityscapes, subset=args.subset), num_workers=args.num_workers, batch_size=args.batch_size, shuffle=False)
         #print(args.datadir)
         # Crea un'istanza del dataset Cityscapes per il set di validazione
-        # validation_dataset = cityscapes(root=args.datadir,
-        #                                 input_transform=input_transform,
-        #                                 target_transform=target_transform,
-        #                                 subset='val')
+        validation_dataset = cityscapes(root=args.datadir,
+                                        input_transform=input_transform,
+                                        target_transform=target_transform,
+                                        subset='val')
         #print(len(validation_dataset))
-         # Crea un DataLoader per il set di validazione
-        validation_loader = DataLoader(loader, batch_size=32, shuffle=False)
+         #Crea un DataLoader per il set di validazione
+        validation_loader = DataLoader(validation_dataset, batch_size=32, shuffle=False)
 
         # Utilizza il DataLoader per eseguire la taratura della temperatura sul modello
         model.set_temperature(validation_loader)
