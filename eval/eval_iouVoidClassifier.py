@@ -117,9 +117,9 @@ def main(args):
           # Seleziona le previsioni del modello in base al metodo specificato dalla riga di comando
           if args.method == 'msp':
               softmax_output = F.softmax(outputs / float(args.temperature), dim=0)
-              predicted_labels = torch.argmax(softmax_output, dim=0).unsqueeze(0).data
+              predicted_labels = torch.argmax(softmax_output, dim=0).unsqueeze(1).data
           elif args.method == 'maxLogit':
-              predicted_labels = torch.argmax(outputs, dim=0).unsqueeze(0).data
+              predicted_labels = torch.argmax(outputs, dim=0).unsqueeze(1).data
           elif args.method == 'maxEntr':
               predicted_labels = torch.argmax(F.softmax(outputs, dim=0), dim=0).unsqueeze(1).data
 
@@ -167,7 +167,7 @@ def main(args):
     file.write("\nmotorcycle -----> " + iou_classes_str[17])
     file.write("\nbicycle -----> " + iou_classes_str[18])
     file.write("\n=======================================\n")
-    
+
     #iouStr = getColorEntry(iouVal)+'{:0.2f}'.format(iouVal*100) + '\033[0m'
     iouStr = '{:0.2f}'.format(iouVal*100)
     file.write ("MEAN IoU: "+iouStr+"% with method: "+str(args.method) + " with temperature: "+ str(args.temperature))

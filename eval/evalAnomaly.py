@@ -4,14 +4,16 @@ import cv2
 import glob
 import torch
 import random
-from PIL import Image
+from PIL import Image, ImageOps
 import numpy as np
 from erfnet import ERFNet
 import os.path as osp
 from argparse import ArgumentParser
 from ood_metrics import fpr_at_95_tpr, calc_metrics, plot_roc, plot_pr, plot_barcode
 from sklearn.metrics import roc_auc_score, roc_curve, auc, precision_recall_curve, average_precision_score
-
+from temperature_scaling import ModelWithTemperature
+from dataset import VOC12,cityscapes
+from torch.utils.data import DataLoader
 seed = 42
 
 # general reproducibility
@@ -25,6 +27,40 @@ NUM_CLASSES = 20
 torch.backends.cudnn.deterministic = True
 torch.backends.cudnn.benchmark = True
 
+class MyCoTransform(object):
+    def __init__(self, enc, augment=True, height=512):
+        self.enc=enc
+        self.augment = augment
+        self.height = height
+        pass
+    def __call__(self, input, target):
+        # do something to both images
+        input =  Resize(self.height, Image.BILINEAR)(input)
+        target = Resize(self.height, Image.NEAREST)(target)
+
+        if(self.augment):
+            # Random hflip
+            hflip = random.random()
+            if (hflip < 0.5):
+                input = input.transpose(Image.FLIP_LEFT_RIGHT)
+                target = target.transpose(Image.FLIP_LEFT_RIGHT)
+            
+            #Random translation 0-2 pixels (fill rest with padding
+            transX = random.randint(-2, 2) 
+            transY = random.randint(-2, 2)
+
+            input = ImageOps.expand(input, border=(transX,transY,0,0), fill=0)
+            target = ImageOps.expand(target, border=(transX,transY,0,0), fill=255) #pad label filling with 255
+            input = input.crop((0, 0, input.size[0]-transX, input.size[1]-transY))
+            target = target.crop((0, 0, target.size[0]-transX, target.size[1]-transY))   
+
+        input = ToTensor()(input)
+        if (self.enc):
+            target = Resize(int(self.height/8), Image.NEAREST)(target)
+        target = ToLabel()(target)
+        target = Relabel(255, 19)(target)
+
+        return input, target
 
 def main():
     parser = ArgumentParser()
@@ -48,33 +84,8 @@ def main():
     parser.add_argument('--temperature', default=1.0)
     ####
     args = parser.parse_args()
-    #print(float(args.temperature)==-1.0)
-    if float(args.temperature) != -1.0:  # Check if temperature argument is set to 1
-        evaluate_model(args)  # If temperature is !=-1, evaluate the model with default temperature
-    else:
-        print(f"Finding best temperature scaling ")
-        # Initialize temperature values for grid search
-        t_values = [0.01, 0.04, 0.05, 0.08, 0.1]
-        best_t = None
-        best_score = -np.inf
-        best_fpr = 0.0
-        # Perform grid search over temperature values
-        for t in t_values:
-            args.temperature = t  # Set current temperature value
-            prc_auc, fpr, temperature = evaluate_model(args)  # Evaluate model with current temperature
-            print(f'Evaluation with Temperature={temperature}:')
-            print(f'AUPRC score: {prc_auc*100.0}')
-            print(f'FPR@TPR95: {fpr*100.0}')
+    
 
-            # Update best temperature and score if necessary
-            if prc_auc > best_score:
-                best_t = temperature
-                best_score = prc_auc
-                best_fpr = fpr*100.0
-
-        print(f'Best temperature found: {best_t}')
-        print(f'Corresponding AUPRC score: {best_score*100.0}')
-        print(f'Corresponding FPR95 score: {best_fpr}')
 
 def evaluate_model(args):
     anomaly_score_list = []
@@ -110,8 +121,21 @@ def evaluate_model(args):
     Dataset_string = "LostAndFound"
     model = load_my_state_dict(model, torch.load(weightspath, map_location=lambda storage, loc: storage))
     print("Model and weights LOADED successfully")
-    model.eval()
-    temperature = float(args.temperature)
+   
+
+    if args.temperature == -1:
+        model = ModelWithTemperature(model)
+        valid_loader = DataLoader(mask, batch_size=args.batch_size, num_workers=args.num_workers, shuffle=True)
+        model.set_temperature(valid_loader)
+        temperature = model.temperature.item()
+        print("Optimal temperature: ",model.temperature.item())
+        model.eval()
+    else:
+         model.eval()
+         temperature= float(args.temperature)
+         
+
+
     for path in glob.glob(os.path.expanduser(str(args.input[0]))):
         #print(path)
         images = torch.from_numpy(np.array(Image.open(path).convert('RGB'))).unsqueeze(0).float()
@@ -120,7 +144,7 @@ def evaluate_model(args):
             result = model(images)
         # ADDED FOR THE PROJECT
         if args.method == 'msp':
-            softmax_probs = torch.nn.functional.softmax(result.squeeze(0) / temperature, dim=0)
+            softmax_probs = torch.nn.functional.softmax(result.squeeze(0)/temperature, dim=0)
             anomaly_result = 1.0 - np.max(softmax_probs.data.cpu().numpy(), axis=0)
         elif args.method == 'maxLogit':
             anomaly_result = -(np.max(result.squeeze(0).data.cpu().numpy(), axis=0))
@@ -184,16 +208,18 @@ def evaluate_model(args):
     prc_auc = average_precision_score(val_label, val_out)
     fpr = fpr_at_95_tpr(val_out, val_label)
 
+
+
     print(f'AUPRC score: {prc_auc*100.0}')
     print(f'FPR@TPR95: {fpr*100.0}')
-    print(f'Temperature : {temperature}')
+    # print(f'Temperature : {args.temperature}')
     # SOME EXTRA WRITING ON THE FILE IN ORDER TO BE MORE READABLE
     file.write('############################### ' + str(Dataset_string) + ' ###############################\n')
-    file.write(('Method:' + str(args.method) + '   AUPRC score:' + str(prc_auc*100.0) + '   FPR@TPR95:' + str(fpr*100.0)+ " with Temperature: " + str(temperature)))
+    file.write(('Method:' + str(args.method) + '   AUPRC score:' + str(prc_auc*100.0) + '   FPR@TPR95:' + str(fpr*100.0))+ 'with temperature: ' + str(temperature))
     file.write('\n\n')
     file.close()
 
-    return prc_auc, fpr, temperature
+    return prc_auc, fpr
 
 
 if __name__ == '__main__':

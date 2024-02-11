@@ -95,9 +95,9 @@ def main(args):
           # Seleziona le previsioni del modello in base al metodo specificato dalla riga di comando
           if args.method == 'msp':
               softmax_output = F.softmax(outputs / float(args.temperature), dim=0)
-              predicted_labels = torch.argmax(softmax_output, dim=0).unsqueeze(0).data
+              predicted_labels = torch.argmax(softmax_output, dim=0).unsqueeze(1).data
           elif args.method == 'maxLogit':
-              predicted_labels = torch.argmax(outputs, dim=0).unsqueeze(0).data
+              predicted_labels = torch.argmax(outputs, dim=0).unsqueeze(1).data
           elif args.method == 'maxEntr':
               predicted_labels = torch.argmax(F.softmax(outputs, dim=0), dim=0).unsqueeze(1).data
 
