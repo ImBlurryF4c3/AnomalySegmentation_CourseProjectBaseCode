@@ -12,8 +12,10 @@ from argparse import ArgumentParser
 from ood_metrics import fpr_at_95_tpr, calc_metrics, plot_roc, plot_pr, plot_barcode
 from sklearn.metrics import roc_auc_score, roc_curve, auc, precision_recall_curve, average_precision_score
 from temperature_scaling import ModelWithTemperature
-from dataset import VOC12,cityscapes
+from dataLoader import VOC12,cityscapes
 from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader
+from torchvision import transforms
 seed = 42
 
 # general reproducibility
@@ -125,10 +127,30 @@ def evaluate_model(args):
     print("Model and weights LOADED successfully")
    
 
-    if args.temperature == -1:
+    if float(args.temperature) == -1:
         model = ModelWithTemperature(model)
-        valid_loader = DataLoader(mask, batch_size=args.batch_size, num_workers=args.num_workers, shuffle=True)
-        model.set_temperature(valid_loader)
+        # Definisci le trasformazioni per le immagini e le etichette
+        input_transform = transforms.Compose([
+            transforms.Resize((256, 256)),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+        ])
+        target_transform = transforms.Compose([
+            transforms.Resize((256, 256), interpolation=Image.NEAREST),
+            transforms.ToTensor()
+        ])
+        print(args.datadir)
+        # Crea un'istanza del dataset Cityscapes per il set di validazione
+        validation_dataset = cityscapes(root=args.datadir,
+                                        input_transform=input_transform,
+                                        target_transform=target_transform,
+                                        subset='val')
+        print(len(validation_dataset))
+         # Crea un DataLoader per il set di validazione
+        validation_loader = DataLoader(validation_dataset, batch_size=32, shuffle=False)
+
+        # Utilizza il DataLoader per eseguire la taratura della temperatura sul modello
+        model.set_temperature(validation_loader)
         temperature = model.temperature.item()
         print("Optimal temperature: ",model.temperature.item())
         model.eval()
@@ -139,7 +161,7 @@ def evaluate_model(args):
 
 
     for path in glob.glob(os.path.expanduser(str(args.input[0]))):
-        print(path)
+        #print(path)
         images = torch.from_numpy(np.array(Image.open(path).convert('RGB'))).unsqueeze(0).float()
         images = images.permute(0, 3, 1, 2)
         with torch.no_grad():
@@ -179,7 +201,7 @@ def evaluate_model(args):
             # ood_gts = np.where((ood_gts > 1) & (ood_gts < 201), 1, ood_gts)
 
             # new implementation
-            print("entra in LostAndFound")
+            #print("entra in LostAndFound")
             ood_gts = np.where((ood_gts == 14), 255, ood_gts)
             ood_gts = np.where((ood_gts < 20), 0, ood_gts)
             ood_gts = np.where((ood_gts == 255), 1, ood_gts)
