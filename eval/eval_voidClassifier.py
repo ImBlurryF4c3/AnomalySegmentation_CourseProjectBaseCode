@@ -7,7 +7,7 @@ import random
 from PIL import Image
 import numpy as np
 from erfnet import ERFNet
-from otherModel.ENet import ENet 
+from otherModel.ENet import ENet
 from otherModel.BiSeNetV1 import BiSeNetV1
 import os.path as osp
 from argparse import ArgumentParser
@@ -78,8 +78,8 @@ def main():
     print("Model you choose : ", str(args.model)) 
     if args.model == 'ERFNet':
         model = ERFNet(NUM_CLASSES)
-   # elif args.model == 'ENet':
-        #model = ENet(NUM_CLASSES)
+    elif args.model == 'ENet':
+            model = ENet(NUM_CLASSES)
     elif args.model =='BiSeNet': 
         model = BiSeNetV1(NUM_CLASSES)
     else:
