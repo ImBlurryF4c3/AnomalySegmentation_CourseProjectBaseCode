@@ -21,7 +21,7 @@ class iouEval:
     def addBatch(self, x, y):   #x=preds, y=targets
         #sizes should be "batch_size x nClasses x H x W"
         
-        #print ("X is cuda: ", x.is_cuda)
+        #print ("X is cuda: ", x.is_cuda)  -> cioè verifica se codice è allocato sulla GPU
         #print ("Y is cuda: ", y.is_cuda)
 
         if (x.is_cuda or y.is_cuda):
@@ -29,11 +29,19 @@ class iouEval:
             y = y.cuda()
 
         #if size is "batch_size x 1 x H x W" scatter to onehot
-        if (x.size(1) == 1):
+            #La rappresentazione one-hot è un vettore che ha una 
+            #lunghezza uguale al numero di classi e ha un 1 nella posizione della classe corrispondente e 0 altrove. 
+            #Questo viene fatto utilizzando la funzione scatter_ di PyTorch.
+
+        if (x.size(1) == 1):    #ovvero se il numero di classi è 1 -> come nel caso in cui volessimo applicare
+            # allora x_onehot è un tensore di dimensione batch_size x nClasses x H x W
+            # e tutti i valori sono 0 tranne quelli che corrispondono alla classe predetta, che sono 1.
             x_onehot = torch.zeros(x.size(0), self.nClasses, x.size(2), x.size(3))  
             if x.is_cuda:
                 x_onehot = x_onehot.cuda()
-            x_onehot.scatter_(1, x, 1).float()
+
+            x_onehot.scatter_(1, x, 1).float() #scatter_(dim, index, src) -> dove src è il valore da assegnare e index è l'indice in cui assegnare il valore e dim è la dimensione in cui assegnare il valore
+            #scatter_ è una funzione di PyTorch che assegna i valori di src a x_onehot in base agli indici forniti in index e serve a creare la rappresentazione one-hot.
         else:
             x_onehot = x.float()
 
@@ -45,6 +53,9 @@ class iouEval:
         else:
             y_onehot = y.float()
 
+    # Se self.ignoreIndex non è -1, 
+    #allora ci sono alcune classi che dovrebbero essere ignorate durante il calcolo dell'IoU.
+    # In questo caso, il codice rimuove queste classi da x_onehot e y_onehot.
         if (self.ignoreIndex != -1): 
             ignores = y_onehot[:,self.ignoreIndex].unsqueeze(1)
             x_onehot = x_onehot[:, :self.ignoreIndex]
@@ -57,6 +68,8 @@ class iouEval:
         #print(x_onehot.size())
         #print(y_onehot.size())
 
+        # il codice calcola i veri positivi (tp), i falsi positivi (fp) e i falsi negativi (fn) per ogni classe. Questi sono calcolati utilizzando operazioni di moltiplicazione e somma su x_onehot e y_onehot. 
+        # Questi valori sono poi sommati ai totali corrispondenti memorizzati nell'oggetto.
         tpmult = x_onehot * y_onehot    #times prediction and gt coincide is 1
         tp = torch.sum(torch.sum(torch.sum(tpmult, dim=0, keepdim=True), dim=2, keepdim=True), dim=3, keepdim=True).squeeze()
         fpmult = x_onehot * (1-y_onehot-ignores) #times prediction says its that class and gt says its not (subtracting cases when its ignore label!)
@@ -100,4 +113,3 @@ def getColorEntry(val):
         return colors.CYAN
     else:
         return colors.GREEN
-

@@ -6,7 +6,7 @@ import torch
 import random
 from PIL import Image
 import numpy as np
-from erfnet import ERFNet
+from otherModel.erfnet import ERFNet
 from otherModel.ENet import ENet
 from otherModel.BiSeNetV1 import BiSeNetV1
 import os.path as osp
@@ -103,7 +103,7 @@ def main():
         state_dict = {f"module.{k}": v if not k.startswith("module.") else v for k, v in state_dict.items()}
         model.load_state_dict(state_dict)
     else:
-        print(state_dict)
+        #print(state_dict)
         model = load_my_state_dict(model, state_dict, args.model)
 
     print("Model and weights LOADED successfully")
