@@ -33,11 +33,15 @@ class iouEval:
             #lunghezza uguale al numero di classi e ha un 1 nella posizione della classe corrispondente e 0 altrove. 
             #Questo viene fatto utilizzando la funzione scatter_ di PyTorch.
 
-        if (x.size(1) == 1):
+        if (x.size(1) == 1):    #ovvero se il numero di classi è 1
+            # allora x_onehot è un tensore di dimensione batch_size x nClasses x H x W
+            # e tutti i valori sono 0 tranne quelli che corrispondono alla classe predetta, che sono 1.
             x_onehot = torch.zeros(x.size(0), self.nClasses, x.size(2), x.size(3))  
             if x.is_cuda:
                 x_onehot = x_onehot.cuda()
-            x_onehot.scatter_(1, x, 1).float()
+
+            x_onehot.scatter_(1, x, 1).float() #scatter_(dim, index, src) -> dove src è il valore da assegnare e index è l'indice in cui assegnare il valore e dim è la dimensione in cui assegnare il valore
+            #scatter_ è una funzione di PyTorch che assegna i valori di src a x_onehot in base agli indici forniti in index e serve a creare la rappresentazione one-hot.
         else:
             x_onehot = x.float()
 

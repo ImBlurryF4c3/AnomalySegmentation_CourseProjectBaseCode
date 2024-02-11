@@ -109,11 +109,12 @@ def main(args):
           if (not args.cpu):
               images = images.cuda()
               labels = labels.cuda()
-
+        #sizes for labels and predicted_labels should be "batch_size x nClasses x H x W"
+              
           inputs = Variable(images)
           with torch.no_grad():
               outputs = model(inputs)
-              void_outputs = outputs[0:19, :, :]
+              void_outputs = outputs[:, 19, :, :]  # Select only the output of class 19 (void class)
           # Seleziona le previsioni del modello in base al metodo specificato dalla riga di comando
           if args.method == 'msp':
               softmax_output = F.softmax(void_outputs / float(args.temperature), dim=1)
