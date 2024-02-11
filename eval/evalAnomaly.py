@@ -128,7 +128,7 @@ def evaluate_model(args):
                                         target_transform=target_transform,
                                         subset='val')
         #print(len(validation_dataset))
-         #Crea un DataLoader per il set di validazione
+        #Crea un DataLoader per il set di validazione
         validation_loader = DataLoader(validation_dataset, batch_size=32, shuffle=False)
 
         # Utilizza il DataLoader per eseguire la taratura della temperatura sul modello
