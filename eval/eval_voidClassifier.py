@@ -7,7 +7,7 @@ import random
 from PIL import Image
 import numpy as np
 from erfnet import ERFNet
-#from otherModel.ENet import ENet 
+from otherModel.ENet import ENet 
 from otherModel.BiSeNetV1 import BiSeNetV1
 import os.path as osp
 from argparse import ArgumentParser
