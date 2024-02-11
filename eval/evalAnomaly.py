@@ -30,7 +30,6 @@ torch.backends.cudnn.deterministic = True
 torch.backends.cudnn.benchmark = True
 
 
-
 def main():
     parser = ArgumentParser()
     parser.add_argument(
@@ -106,13 +105,13 @@ def evaluate_model(args):
             transforms.Resize((256, 256), interpolation=Image.NEAREST),
             transforms.ToTensor()
         ])
-        print(args.datadir)
+        #print(args.datadir)
         # Crea un'istanza del dataset Cityscapes per il set di validazione
         validation_dataset = cityscapes(root=args.datadir,
                                         input_transform=input_transform,
                                         target_transform=target_transform,
                                         subset='val')
-        print(len(validation_dataset))
+        #print(len(validation_dataset))
          # Crea un DataLoader per il set di validazione
         validation_loader = DataLoader(validation_dataset, batch_size=32, shuffle=False)
 

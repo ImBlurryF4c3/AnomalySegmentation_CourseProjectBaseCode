@@ -271,7 +271,7 @@ if __name__ == '__main__':
     parser.add_argument('--batch-size', type=int, default=1)
     parser.add_argument('--cpu', action='store_true')
     parser.add_argument('--method', default='msp')  # Aggiunge l'argomento method con valore predefinito 'msp'
-    parser.add_argument('--temperature', type=float, default=1.0)  # Aggiunge l'argomento temperature con valore predefinito -1
-    parser.add_argument('--model', type=float, default="BiSeNet")  # Aggiunge l'argomento temperature con valore predefinito -1
+    parser.add_argument('--temperature', type=float, default=1.0)  # Aggiunge l'argomento temperature con valore predefinito 1
+    parser.add_argument('--model', type=float, default="BiSeNet")  # Aggiunge l'argomento model con valore predefinito BiSeNet
     
     main(parser.parse_args())
