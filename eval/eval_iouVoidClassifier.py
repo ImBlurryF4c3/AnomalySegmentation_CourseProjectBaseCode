@@ -102,7 +102,8 @@ def main(args):
         print("Temperature not specified, error!")
     else :
       
-      iouEvalVal = iouEval(NUM_CLASSES,ignoreIndex=-1) #ho aggiunto ignoreIndex=-1 per evitare che ignori la classe 19
+      #stiamo facendo una prova con 2 SOLE CLASSI!!!!!!!!!!!!!!!!!!!!!!!!
+      iouEvalVal = iouEval(2,ignoreIndex=-1) #ho aggiunto ignoreIndex=-1 per evitare che ignori la classe 19
 
       start = time.time()
 
@@ -115,16 +116,23 @@ def main(args):
               
           inputs = Variable(images)
           with torch.no_grad():
-              outputs = model(inputs)
-              void_outputs = outputs[:, 19, :, :]  # Select only the output of class 19 (void class) -> se problema qui è perchè non c'è la classe 20 (void)
+              outputs = model(inputs)[0] #l'alternativa è mettere [1] -> in poche parole, la funzione ritorna una tupla
+              #void_outputs = outputs[:, 19, :, :]  # Select only the output of class 19 (void class) -> se problema qui è perchè non c'è la classe 20 (void)
+
+          #converti il tensore 3D in un tensore 4D di dimensione [x, 1, y, z]
+          #void_outputs = void_outputs.unsqueeze(1)
+
           # Seleziona le previsioni del modello in base al metodo specificato dalla riga di comando
           if args.method == 'msp':
-              softmax_output = F.softmax(void_outputs / float(args.temperature), dim=1)
+              softmax_output = F.softmax(outputs / float(args.temperature), dim=1)
               predicted_labels = torch.argmax(softmax_output, dim=1).unsqueeze(1).data
           elif args.method == 'maxLogit':
-              predicted_labels = torch.argmax(void_outputs, dim=1).unsqueeze(1).data
+              predicted_labels = torch.argmax(outputs, dim=1).unsqueeze(1).data
           elif args.method == 'maxEntr':
-              predicted_labels = torch.argmax(F.softmax(void_outputs, dim=1), dim=1).unsqueeze(1).data
+              predicted_labels = torch.argmax(F.softmax(outputs, dim=1), dim=1).unsqueeze(1).data
+
+          predicted_labels_void = torch.where(predicted_labels == 19, 1, 0)
+
 
           iouEvalVal.addBatch(predicted_labels, labels)
 
@@ -147,30 +155,33 @@ def main(args):
 
     print("---------------------------------------")
     print("Took ", time.time()-start, "seconds")
-    file.write('############################### ' + str(args.model) + ' ###############################\n')
-    #print("TOTAL IOU: ", iou * 100, "%")
-    file.write("Per-Class IoU:\n")
-    file.write("Road -----> " + iou_classes_str[0])
-    file.write("\nsidewalk -----> " + iou_classes_str[1])
-    file.write("\nbuilding -----> " + iou_classes_str[2])
-    file.write("\nwall -----> " + iou_classes_str[3])
-    file.write("\nfence -----> " + iou_classes_str[4])
-    file.write("\npole -----> " + iou_classes_str[5])
-    file.write("\ntraffic light -----> " + iou_classes_str[6])
-    file.write("\ntraffic sign -----> " + iou_classes_str[7])
-    file.write("\nvegetation -----> " + iou_classes_str[8])
-    file.write("\nterrain -----> " + iou_classes_str[9])
-    file.write("\nsky -----> " + iou_classes_str[10])
-    file.write("\nperson -----> " + iou_classes_str[11])
-    file.write("\nrider -----> " + iou_classes_str[12])
-    file.write("\ncar -----> " + iou_classes_str[13])
-    file.write("\ntruck -----> " + iou_classes_str[14])
-    file.write("\nbus -----> " + iou_classes_str[15])
-    file.write("\ntrain -----> " + iou_classes_str[16])
-    file.write("\nmotorcycle -----> " + iou_classes_str[17])
-    file.write("\nbicycle -----> " + iou_classes_str[18])
-    file.write("\nVOID -----> " + iou_classes_str[19])
-    file.write("\n=======================================\n")
+    # file.write('############################### ' + str(args.model) + ' ###############################\n')
+    # #print("TOTAL IOU: ", iou * 100, "%")
+    # file.write("Per-Class IoU:\n")
+    print("Per-Class IoU:\n")
+    # file.write("Road -----> " + iou_classes_str[0])
+    # file.write("\nsidewalk -----> " + iou_classes_str[1])
+    print("NON-VOID -----> " + iou_classes_str[0])
+    print("\nVOID -----> " + iou_classes_str[1])
+    # file.write("\nbuilding -----> " + iou_classes_str[2])
+    # file.write("\nwall -----> " + iou_classes_str[3])
+    # file.write("\nfence -----> " + iou_classes_str[4])
+    # file.write("\npole -----> " + iou_classes_str[5])
+    # file.write("\ntraffic light -----> " + iou_classes_str[6])
+    # file.write("\ntraffic sign -----> " + iou_classes_str[7])
+    # file.write("\nvegetation -----> " + iou_classes_str[8])
+    # file.write("\nterrain -----> " + iou_classes_str[9])
+    # file.write("\nsky -----> " + iou_classes_str[10])
+    # file.write("\nperson -----> " + iou_classes_str[11])
+    # file.write("\nrider -----> " + iou_classes_str[12])
+    # file.write("\ncar -----> " + iou_classes_str[13])
+    # file.write("\ntruck -----> " + iou_classes_str[14])
+    # file.write("\nbus -----> " + iou_classes_str[15])
+    # file.write("\ntrain -----> " + iou_classes_str[16])
+    # file.write("\nmotorcycle -----> " + iou_classes_str[17])
+    # file.write("\nbicycle -----> " + iou_classes_str[18])
+    # file.write("\nVOID -----> " + iou_classes_str[19])
+    print("\n=======================================\n")
     
     #iouStr = getColorEntry(iouVal)+'{:0.2f}'.format(iouVal*100) + '\033[0m'
     iouStr = '{:0.2f}'.format(iouVal*100)
@@ -271,12 +282,12 @@ if __name__ == '__main__':
     parser.add_argument('--loadWeights', default="bisenetv1.pth")
     parser.add_argument('--loadModel', default="./otherModel/BiSeNetV1.py")
     parser.add_argument('--subset', default="val")  #can be val or train (must have labels)
-    parser.add_argument('--datadir', default="/home/shyam/ViT-Adapter/segmentation/data/cityscapes/")
+    parser.add_argument('--datadir', default="/content/AnomalySegmentation_CourseProjectBaseCode/Cityscapes")
     parser.add_argument('--num-workers', type=int, default=4)
     parser.add_argument('--batch-size', type=int, default=1)
     parser.add_argument('--cpu', action='store_true')
-    parser.add_argument('--method', default='msp')  # Aggiunge l'argomento method con valore predefinito 'msp'
+    parser.add_argument('--method', default='maxLogit')  # Aggiunge l'argomento method con valore predefinito 'msp'
     parser.add_argument('--temperature', type=float, default=1.0)  # Aggiunge l'argomento temperature con valore predefinito -1
-    parser.add_argument('--model', type=float, default="BiSeNet")  # Aggiunge l'argomento temperature con valore predefinito -1
+    parser.add_argument('--model', type=str, default="BiSeNet")  # Aggiunge l'argomento temperature con valore predefinito -1
     
     main(parser.parse_args())
