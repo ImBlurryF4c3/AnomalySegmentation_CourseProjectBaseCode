@@ -88,6 +88,21 @@ def train(args, model, enc=False):
     #TODO: calculate weights by processing dataset histogram (now its being set by hand from the torch values)
     #create a loder to run all images and calculate histogram of labels, then create weight array using class balancing
 
+    def calculate_weights(dataset):
+        label_counts = torch.zeros(NUM_CLASSES)
+        for data in dataset:
+            _, labels = data
+            label_counts += torch.bincount(labels.flatten(), minlength=NUM_CLASSES)
+
+        total_samples = sum(label_counts)
+        weights = 1 / (label_counts / total_samples)
+
+        return weights
+
+    # ...
+
+    
+
     weight = torch.ones(NUM_CLASSES)
     if (enc):
         weight[0] = 2.3653597831726	
@@ -131,6 +146,10 @@ def train(args, model, enc=False):
         weight[18] = 10.138095855713	
 
     weight[19] = 0
+
+    dataset_train = cityscapes(args.datadir, co_transform, 'train')
+    weights = calculate_weights(dataset_train)
+    weight = torch.tensor(weights)
 
     assert os.path.exists(args.datadir), "Error: datadir (dataset directory) could not be loaded"
 
