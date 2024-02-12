@@ -18,7 +18,7 @@ from torch.autograd import Variable
 from torch.utils.data import DataLoader
 from torchvision.transforms import Compose, CenterCrop, Normalize, Resize, Pad
 from torchvision.transforms import ToTensor, ToPILImage
-
+import torch.nn.functional as F
 from dataset import VOC12,cityscapes
 from transform import Relabel, ToLabel, Colorize
 from visualize import Dashboard
@@ -34,7 +34,94 @@ NUM_CLASSES = 20 #pascal=22, cityscapes=20
 color_transform = Colorize(NUM_CLASSES)
 image_transform = ToPILImage()
 
+class FocalLoss(torch.nn.Module):
+    def __init__(self, gamma=2.0, alpha=None, size_average=True):
+        super(FocalLoss, self).__init__()
+        self.gamma = gamma
+        self.alpha = alpha
+        if isinstance(alpha,(float,int,torch.long)): self.alpha = torch.Tensor([alpha,1-alpha])
+        if isinstance(alpha,list): self.alpha = torch.Tensor(alpha)
+        self.size_average = size_average
+
+    def forward(self, input, target):
+        if input.dim()>2:
+            input = input.view(input.size(0),input.size(1),-1)  # N,C,H,W => N,C,H*W
+            input = input.transpose(1,2)    # N,C,H*W => N,H*W,C
+            input = input.contiguous().view(-1,input.size(2))   # N,H*W,C => N*H*W,C
+        target = target.view(-1,1)
+
+        logpt = F.log_softmax(input)
+        logpt = logpt.gather(1,target)
+        logpt = logpt.view(-1)
+        pt = Variable(logpt.data.exp())
+
+        if self.alpha is not None:
+            if self.alpha.type()!=input.data.type():
+                self.alpha = self.alpha.type_as(input.data)
+            at = self.alpha.gather(0,target.data.view(-1))
+            logpt = logpt * Variable(at)
+
+        loss = -1 * (1-pt)**self.gamma * logpt
+        if self.size_average: return loss.mean()
+        else: return loss.sum()
+
+
+class EnhancedIsotropyMaximizationLoss(torch.nn.Module):
+    def __init__(self, model, weight=None):
+        super(EnhancedIsotropyMaximizationLoss, self).__init__()
+        self.weight = weight
+        # Crea un input di esempio
+        input = torch.randn(1, 3, 224, 224)
+        # Passa l'input attraverso la rete
+        output = model(input)
+        # Stampa la dimensione dell'output
+        print(output.size())
+        self.feature_dim = output.size(1)
+        # Inizializzare i prototipi con una distribuzione normale
+        self.prototypes = torch.nn.Parameter(torch.randn(NUM_CLASSES, self.feature_dim))
+        # Inizializzare la scala della distanza a uno
+        self.distance_scale = torch.nn.Parameter(torch.tensor(1.0))
+
+
+    def forward(self, output, target):
+       # Compute the Enhanced Isotropy Maximization Loss
+       
+        # Normalizzare le caratteristiche in uscita dalla rete
+        output = F.normalize(output, dim=1)
+        # Calcolare le distanze tra le caratteristiche e i prototipi
+        distances = torch.abs(self.distance_scale) * torch.cdist(output, self.prototypes, p=2.0)
+        # Calcolare i logit come il negativo delle distanze
+        # Calcolare i logit come il negativo delle distanze
+        logits = -distances
+        # Calcolare le probabilità usando la funzione softmax sui logit
+        probabilities = F.softmax(logits, dim=1)
+        # Selezionare le probabilità corrispondenti alle etichette target
+        probabilities_at_targets = probabilities[torch.arange(output.size(0)), target]
+        # Calcolare la perdita come il negativo del logaritmo delle probabilità
+        loss = -torch.log(probabilities_at_targets).mean()
+        # Restituire la perdita
+        return loss
+        
+
+class LogitNormalizationLoss(torch.nn.Module):
+    def __init__(self, weight=None, tau=1.0):
+        super(LogitNormalizationLoss, self).__init__()
+        self.weight = weight
+        self.tau = tau # il parametro di temperatura
+
+    def forward(self, output, target):
+        # normalizza il vettore di logit per avere una norma costante
+        output_norm = output / (output.norm(dim=1, keepdim=True) + 1e-7)
+        # applica la funzione softmax con la temperatura
+        output_prob = torch.nn.functional.softmax(output_norm / self.tau, dim=1)
+        # calcola la cross-entropy loss con i logit normalizzati
+        loss = torch.nn.functional.cross_entropy(output_prob, target, weight=self.weight)
+        return loss
+
+        
+
 #Augmentations - different function implemented to perform random augments on both image and target
+
 class MyCoTransform(object):
     def __init__(self, enc, augment=True, height=512):
         self.enc=enc
@@ -87,7 +174,16 @@ def train(args, model, enc=False):
 
     #TODO: calculate weights by processing dataset histogram (now its being set by hand from the torch values)
     #create a loder to run all images and calculate histogram of labels, then create weight array using class balancing
-
+    if args.lossfunction == "enhanced_isotropy":
+        isotropy_loss = EnhancedIsotropyMaximizationLoss(weight,model)
+    elif args.lossfunction == "logit_norm":
+        normalization_loss = LogitNormalizationLoss(weight)
+    else: ##cross_entropy
+        criterion = CrossEntropyLoss2d(weight)
+    
+    if args.focal_loss == True:
+        focal_loss = FocalLoss()
+        
     weight = torch.ones(NUM_CLASSES)
     if (enc):
         weight[0] = 2.3653597831726	
@@ -144,8 +240,8 @@ def train(args, model, enc=False):
 
     if args.cuda:
         weight = weight.cuda()
-    criterion = CrossEntropyLoss2d(weight)
-    print(type(criterion))
+    # criterion = CrossEntropyLoss2d(weight)
+    # print(type(criterion))
 
     savedir = f'../save/{args.savedir}'
 
@@ -230,11 +326,39 @@ def train(args, model, enc=False):
             #print("targets", np.unique(targets[:, 0].cpu().data.numpy()))
 
             optimizer.zero_grad()
-            loss = criterion(outputs, targets[:, 0])
-            loss.backward()
-            optimizer.step()
+            if args.lossfunction == "cross_entropy": ########codice di default
+                loss = criterion(outputs, targets[:, 0])
+                loss.backward()
+                optimizer.step()
+                epoch_loss.append(loss.data[0])
 
-            epoch_loss.append(loss.data[0])
+            elif args.lossfunction == "logit_norm":
+                # Implement Focal Loss calculation using outputs and targets
+                if args.focal_loss == True:
+                    loss = focal_loss(outputs,targets[:, 0])
+                else:
+                    loss = criterion(outputs, targets[:, 0])
+                logit_norm_loss = normalization_loss(outputs, targets[:, 0])
+                loss.backward()
+                logit_norm_loss.backward()
+                optimizer.step()
+                epoch_loss.append(loss.data[0])
+                epoch_loss.append(logit_norm_loss.data[0])
+
+            elif args.lossfunction == "enhanced_isotropy":
+                eim_loss = isotropy_loss(outputs, targets[:, 0])
+                 # Implement Focal Loss calculation using outputs and targets
+                if args.focal_loss == True:
+                    loss = focal_loss(outputs,targets[:, 0])
+                else:
+                    loss = criterion(outputs, targets[:, 0])
+                eim_loss.backward()
+                loss.backward()
+                optimizer.step()
+                epoch_loss.append(eim_loss.data[0])
+                epoch_loss.append(loss.data[0])
+
+
             time_train.append(time.time() - start_time)
 
             if (doIouTrain):
@@ -275,6 +399,8 @@ def train(args, model, enc=False):
             print ("EPOCH IoU on TRAIN set: ", iouStr, "%")  
 
         #Validate on 500 val images after each epoch of training
+            
+            ################# anche qui si fa attenzione al loss_function ###############
         print("----- VALIDATING - EPOCH", epoch, "-----")
         model.eval()
         epoch_loss_val = []
@@ -293,8 +419,42 @@ def train(args, model, enc=False):
             targets = Variable(labels, volatile=True)
             outputs = model(inputs, only_encode=enc) 
 
-            loss = criterion(outputs, targets[:, 0])
-            epoch_loss_val.append(loss.data[0])
+
+            if args.lossfunction == "cross_entropy": ########codice di default
+                loss = criterion(outputs, targets[:, 0])
+                loss.backward()
+                optimizer.step()
+                epoch_loss_val.append(loss.data[0])
+
+            elif args.lossfunction == "logit_norm":
+                # Implement Focal Loss calculation using outputs and targets
+                if args.focal_loss == True:
+                    loss = loss = focal_loss(outputs,targets[:, 0])
+                else:
+                    loss = criterion(outputs, targets[:, 0])
+                logit_norm_loss = normalization_loss(outputs, targets[:, 0])
+                loss.backward()
+                logit_norm_loss.backward()
+                optimizer.step()
+                epoch_loss_val.append(loss.data[0])
+                epoch_loss_val.append(logit_norm_loss.data[0])
+
+            elif args.lossfunction == "enhanced_isotropy":
+                eim_loss = isotropy_loss(outputs, targets[:, 0])
+                 # Implement Focal Loss calculation using outputs and targets
+                if args.focal_loss == True:
+                    loss = loss = focal_loss(outputs,targets[:, 0])
+                else:
+                    loss = criterion(outputs, targets[:, 0])
+                eim_loss.backward()
+                loss.backward()
+                optimizer.step()
+                epoch_loss_val.append(eim_loss.data[0])
+                epoch_loss_val.append(loss.data[0])
+
+
+
+            
             time_val.append(time.time() - start_time)
 
 
@@ -499,7 +659,8 @@ if __name__ == '__main__':
     parser.add_argument('--decoder', action='store_true')
     parser.add_argument('--pretrainedEncoder') #, default="../trained_models/erfnet_encoder_pretrained.pth.tar")
     parser.add_argument('--visualize', action='store_true')
-
+    parser.add_argument('--lossfunction', type=str, default="cross_entropy", help="Choose for cross_entropy for default one, logit_norm for Logit Normalization Loss, and enhanced_isotropy for Enhanced Isotropy Maximization Loss") #using training loss function is default setted on false
+    parser.add_argument('--focal_loss',type=bool, default=False, help="do you want to analyze the effect of losses when trained joinly with focal loss? default is false, you train with cross_entropy by default") #### Analyze the effect of these losses when trained jointly with focal loss and cross-entropy loss
     parser.add_argument('--iouTrain', action='store_true', default=False) #recommended: False (takes more time to train otherwise)
     parser.add_argument('--iouVal', action='store_true', default=True)  
     parser.add_argument('--resume', action='store_true')    #Use this flag to load last checkpoint for training  

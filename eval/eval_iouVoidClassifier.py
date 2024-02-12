@@ -164,9 +164,9 @@ def main(args):
         iouStr = '{:0.2f}'.format(iou_classes[i]*100)
         iou_classes_str.append(iouStr)
 
-      if not os.path.exists('mIoU_results.txt'):
-        open('mIoU_results.txt', 'w').close()
-    file = open('mIoU_results.txt', 'a')
+      if not os.path.exists('mIoU_resultsVoid.txt'):
+        open('mIoU_resultsVoid.txt', 'w').close()
+    file = open('mIoU_resultsVoid.txt', 'a')
 
     print("---------------------------------------")
     print("Took ", time.time()-start, "seconds")
