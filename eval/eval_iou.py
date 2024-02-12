@@ -105,6 +105,7 @@ def main(args):
         elif args.method == 'maxEntr':
             predicted_labels = torch.argmax(F.softmax(outputs, dim=1), dim=1).unsqueeze(1).data
 
+
         iouEvalVal.addBatch(predicted_labels, labels)
 
         filenameSave = filename[0].split("leftImg8bit/")[1] 
