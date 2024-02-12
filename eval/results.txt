@@ -1,10 +1,14 @@
+############################### Lost & Found ###############################
+Method:msp   AUPRC score:22.573470384748667   FPR@TPR95:93.07029946238686 with Temperature: 1.0
 
-############################### LostAndFound ###############################
-Method:maxLogit   AUPRC score:0.21394580339077093   FPR@TPR95:96.44090608320006 with Temperature: 1.0
+
+############################### Lost & Found ###############################
+Method:maxLogit   AUPRC score:30.989339578326113   FPR@TPR95:89.87163630068729 with Temperature: 1.0
 
 
-############################### LostAndFound ###############################
-Method:msp   AUPRC score:0.2570842545979514   FPR@TPR95:95.82944394908544 with Temperature: 1.0
+
+############################### Lost & Found ###############################
+Method:maxEntr   AUPRC score:23.885063073993116   FPR@TPR95:92.52972549132139 with Temperature: 1.0
 
 
 ############################### Road Anomaly ###############################
@@ -55,18 +59,6 @@ Method:msp   AUPRC score:14.58540054434633   FPR@TPR95:95.09016002276572 with Te
 Method:maxEntr   AUPRC score:14.309849930559887   FPR@TPR95:96.71604360965756 with Temperature: 1.0
 
 
-############################### LostAndFound ###############################
-Method:msp   AUPRC score:0.26835078597438317   FPR@TPR95:95.40641879705322 with Temperature: 0.5
-
-
-############################### LostAndFound ###############################
-Method:msp   AUPRC score:0.2623923811001717   FPR@TPR95:95.61697250076462 with Temperature: 0.75
-
-
-############################### LostAndFound ###############################
-Method:msp   AUPRC score:0.2551102227647196   FPR@TPR95:95.9132331093414 with Temperature: 1.1
-
-
 ############################### Road Anomaly ###############################
 Method:msp   AUPRC score:9.606395469533675   FPR@TPR95:95.1719109696391 with Temperature: 0.5
 
@@ -114,133 +106,33 @@ Method:msp   AUPRC score:0.7100454943374215   FPR@TPR95:94.8268520425271 with Te
 ############################### Road Obstacle 21 ###############################
 Method:msp   AUPRC score:0.724889939664395   FPR@TPR95:94.74540607588997 with Temperature: 1.1
 
-############################### LostAndFound ###############################
-Method:msp   AUPRC score:0.2824879175830879   FPR@TPR95:95.00862002695666 with Temperature: 0.01
+############################### Lost & Found ###############################
+Method:msp   AUPRC score:21.10014985270366   FPR@TPR95:94.14908761329104 with Temperature: 0.5
 
 
-############################### LostAndFound ###############################
-Method:msp   AUPRC score:0.28151076888684107   FPR@TPR95:95.03349554687122 with Temperature: 0.04
+############################### Lost & Found ###############################
+Method:msp   AUPRC score:21.945594076779802   FPR@TPR95:93.62313675297027 with Temperature: 0.75
 
 
-############################### LostAndFound ###############################
-Method:msp   AUPRC score:0.2811951867361597   FPR@TPR95:95.04207511404417 with Temperature: 0.05
-
-
-############################### LostAndFound ###############################
-Method:msp   AUPRC score:0.2802323739218762   FPR@TPR95:95.06645602763322 with Temperature: 0.08
-
-
-############################### LostAndFound ###############################
-Method:msp   AUPRC score:0.2796080229439447   FPR@TPR95:95.08309544979863 with Temperature: 0.1
-
+############################### Lost & Found ###############################
+Method:msp   AUPRC score:22.772389191091772   FPR@TPR95:92.85303474701574 with Temperature: 1.1
 
 ############################### Road Anomaly ###############################
-Method:msp   AUPRC score:9.844093288918861   FPR@TPR95:95.00389395100443 with Temperature: 0.01
-
-
-############################### Road Anomaly ###############################
-Method:msp   AUPRC score:9.827387235131384   FPR@TPR95:95.01478515259494 with Temperature: 0.04
-
-
-############################### Road Anomaly ###############################
-Method:msp   AUPRC score:9.822011292968885   FPR@TPR95:95.01864859022274 with Temperature: 0.05
-
-
-############################### Road Anomaly ###############################
-Method:msp   AUPRC score:9.805895796739208   FPR@TPR95:95.02984236810737 with Temperature: 0.08
-
-
-############################### Road Anomaly ###############################
-Method:msp   AUPRC score:9.79528127455436   FPR@TPR95:95.03715569769395 with Temperature: 0.1
-
-
-############################### FS Static ###############################
-Method:msp   AUPRC score:2.081711968507275   FPR@TPR95:95.00524429981769 with Temperature: 0.01
-
-
-############################### FS Static ###############################
-Method:msp   AUPRC score:2.0764110662141   FPR@TPR95:95.02035509709515 with Temperature: 0.04
-
-
-############################### FS Static ###############################
-Method:msp   AUPRC score:2.074657999093409   FPR@TPR95:95.02468224307346 with Temperature: 0.05
-
-
-############################### FS Static ###############################
-Method:msp   AUPRC score:2.0696336265442046   FPR@TPR95:95.03863705286521 with Temperature: 0.08
-
-
-############################### FS Static ###############################
-Method:msp   AUPRC score:2.066413179962962   FPR@TPR95:95.04713285140518 with Temperature: 0.1
+Method:msp   AUPRC score:10.00848788789767   FPR@TPR95:94.2829620573639 with temperature: 1.852055311203003
 
 
 ############################### Road Anomaly 21 ###############################
-Method:msp   AUPRC score:14.801963681254804   FPR@TPR95:95.00175262825775 with Temperature: 0.01
-
-
-############################### Road Anomaly 21 ###############################
-Method:msp   AUPRC score:14.791942951027295   FPR@TPR95:95.00608297645593 with Temperature: 0.04
-
-
-############################### Road Anomaly 21 ###############################
-Method:msp   AUPRC score:14.788505809804231   FPR@TPR95:95.00737490016314 with Temperature: 0.05
-
-
-############################### Road Anomaly 21 ###############################
-Method:msp   AUPRC score:14.778815449878161   FPR@TPR95:95.01055485178966 with Temperature: 0.08
-
-
-############################### Road Anomaly 21 ###############################
-Method:msp   AUPRC score:14.772830921318564   FPR@TPR95:95.0125351666943 with Temperature: 0.1
+Method:msp   AUPRC score:15.008123910621924   FPR@TPR95:96.93176006842086 with temperature: 1.8506171703338623
 
 
 ############################### Road Obstacle 21 ###############################
-Method:msp   AUPRC score:0.6754492040368031   FPR@TPR95:94.99694471855497 with Temperature: 0.01
+Method:msp   AUPRC score:0.6348907045144523   FPR@TPR95:94.5101186963156 with temperature: 1.8506171703338623
 
 
-############################### Road Obstacle 21 ###############################
-Method:msp   AUPRC score:0.6773428644680112   FPR@TPR95:94.9897848852299 with Temperature: 0.04
+############################### FS Static ###############################
+Method:msp   AUPRC score:1.761478015994392   FPR@TPR95:93.78094831855451 with temperature: 1.8506171703338623
 
 
-############################### Road Obstacle 21 ###############################
-Method:msp   AUPRC score:0.6779552923082068   FPR@TPR95:94.98701129606962 with Temperature: 0.05
+############################### Lost & Found ###############################
+Method:msp   AUPRC score:26.812956531426373   FPR@TPR95:92.58278738458505 with temperature: 1.8506171703338623
 
-
-############################### Road Obstacle 21 ###############################
-Method:msp   AUPRC score:0.6795062290954693   FPR@TPR95:94.98070889096823 with Temperature: 0.08
-
-
-############################### Road Obstacle 21 ###############################
-Method:msp   AUPRC score:0.6803720782066071   FPR@TPR95:94.97776322618378 with Temperature: 0.1
-
-
-LostAndFound
-Best temperature found: 0.01
-Corresponding AUPRC score: 0.2824879175830879
-Corresponding FPR95 score: 95.00862002695666
-
-
-
-Road Anomaly
-Best temperature found: 0.01
-Corresponding AUPRC score: 9.844093288918861
-Corresponding FPR95 score: 95.00389395100443
-
-
-
-FS Static
-Best temperature found: 0.01
-Corresponding AUPRC score: 2.081711968507275
-Corresponding FPR95 score: 95.00524429981769
-
-
-Road Anomaly 21
-Best temperature found: 0.01
-Corresponding AUPRC score: 14.801963681254804
-Corresponding FPR95 score: 95.00175262825775
-
-
-Road Obstacle 21
-Best temperature found: 0.1
-Corresponding AUPRC score: 0.6803720782066071
-Corresponding FPR95 score: 94.97776322618378

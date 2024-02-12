@@ -4,14 +4,21 @@ import cv2
 import glob
 import torch
 import random
-from PIL import Image
+from PIL import Image, ImageOps
 import numpy as np
 from erfnet import ERFNet
 import os.path as osp
 from argparse import ArgumentParser
 from ood_metrics import fpr_at_95_tpr, calc_metrics, plot_roc, plot_pr, plot_barcode
 from sklearn.metrics import roc_auc_score, roc_curve, auc, precision_recall_curve, average_precision_score
-
+from temperature_scaling import ModelWithTemperature
+from dataset import VOC12,cityscapes
+from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader
+from transform import Relabel, ToLabel, Colorize
+from torchvision import transforms
+from torchvision.transforms import ToTensor, ToPILImage
+from torchvision.transforms import Compose, CenterCrop, Normalize, Resize
 seed = 42
 
 # general reproducibility
@@ -48,33 +55,9 @@ def main():
     parser.add_argument('--temperature', default=1.0)
     ####
     args = parser.parse_args()
-    #print(float(args.temperature)==-1.0)
-    if float(args.temperature) != -1.0:  # Check if temperature argument is set to 1
-        evaluate_model(args)  # If temperature is !=-1, evaluate the model with default temperature
-    else:
-        print(f"Finding best temperature scaling ")
-        # Initialize temperature values for grid search
-        t_values = [0.01, 0.04, 0.05, 0.08, 0.1]
-        best_t = None
-        best_score = -np.inf
-        best_fpr = 0.0
-        # Perform grid search over temperature values
-        for t in t_values:
-            args.temperature = t  # Set current temperature value
-            prc_auc, fpr, temperature = evaluate_model(args)  # Evaluate model with current temperature
-            print(f'Evaluation with Temperature={temperature}:')
-            print(f'AUPRC score: {prc_auc*100.0}')
-            print(f'FPR@TPR95: {fpr*100.0}')
+    evaluate_model(args) 
+    
 
-            # Update best temperature and score if necessary
-            if prc_auc > best_score:
-                best_t = temperature
-                best_score = prc_auc
-                best_fpr = fpr*100.0
-
-        print(f'Best temperature found: {best_t}')
-        print(f'Corresponding AUPRC score: {best_score*100.0}')
-        print(f'Corresponding FPR95 score: {best_fpr}')
 
 def evaluate_model(args):
     anomaly_score_list = []
@@ -103,6 +86,7 @@ def evaluate_model(args):
                     own_state[name.split("module.")[-1]].copy_(param)
                 else:
                     print(name, " not loaded")
+                    
                     continue
             else:
                 own_state[name].copy_(param)
@@ -110,17 +94,63 @@ def evaluate_model(args):
     Dataset_string = "LostAndFound"
     model = load_my_state_dict(model, torch.load(weightspath, map_location=lambda storage, loc: storage))
     print("Model and weights LOADED successfully")
-    model.eval()
-    temperature = float(args.temperature)
+   
+
+    if float(args.temperature) == -1:
+        model = ModelWithTemperature(model)
+        # Definisci le trasformazioni per le immagini e le etichette
+        input_transform = transforms.Compose([
+            transforms.Resize((256, 256)),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+        ])
+        target_transform = transforms.Compose([
+            transforms.Resize((256, 256), interpolation=Image.NEAREST),
+            transforms.ToTensor()
+        ])
+
+        # image_transform = ToPILImage()
+        # input_transform_cityscapes = Compose([
+        #     Resize(512, Image.BILINEAR),
+        #     ToTensor(),
+        # ])
+        # target_transform_cityscapes = Compose([
+        #     Resize(512, Image.NEAREST),
+        #     ToLabel(),
+        #     Relabel(255, 19),   #ignore label to 19
+        # ])
+
+        # validation_loader = DataLoader(cityscapes(args.datadir, input_transform_cityscapes, target_transform_cityscapes, subset=args.subset), num_workers=args.num_workers, batch_size=args.batch_size, shuffle=False)
+        #print(args.datadir)
+        # Crea un'istanza del dataset Cityscapes per il set di validazione
+        validation_dataset = cityscapes(root=args.datadir,
+                                        input_transform=input_transform,
+                                        target_transform=target_transform,
+                                        subset='val')
+        #print(len(validation_dataset))
+        #Crea un DataLoader per il set di validazione
+        validation_loader = DataLoader(validation_dataset, batch_size=32, shuffle=False)
+
+        # Utilizza il DataLoader per eseguire la taratura della temperatura sul modello
+        model.set_temperature(validation_loader)
+        temperature = model.temperature.item()
+        print("Optimal temperature: ",model.temperature.item())
+        model.eval()
+    else:
+         model.eval()
+         temperature= float(args.temperature)
+         
+
+
     for path in glob.glob(os.path.expanduser(str(args.input[0]))):
-        print(path)
+        #print(path)
         images = torch.from_numpy(np.array(Image.open(path).convert('RGB'))).unsqueeze(0).float()
         images = images.permute(0, 3, 1, 2)
         with torch.no_grad():
             result = model(images)
         # ADDED FOR THE PROJECT
         if args.method == 'msp':
-            softmax_probs = torch.nn.functional.softmax(result.squeeze(0) / temperature, dim=0)
+            softmax_probs = torch.nn.functional.softmax(result.squeeze(0)/temperature, dim=0)
             anomaly_result = 1.0 - np.max(softmax_probs.data.cpu().numpy(), axis=0)
         elif args.method == 'maxLogit':
             anomaly_result = -(np.max(result.squeeze(0).data.cpu().numpy(), axis=0))
@@ -153,7 +183,7 @@ def evaluate_model(args):
             # ood_gts = np.where((ood_gts > 1) & (ood_gts < 201), 1, ood_gts)
 
             # new implementation
-            print("entra in LostAndFound")
+            #print("entra in LostAndFound")
             ood_gts = np.where((ood_gts == 14), 255, ood_gts)
             ood_gts = np.where((ood_gts < 20), 0, ood_gts)
             ood_gts = np.where((ood_gts == 255), 1, ood_gts)
@@ -192,16 +222,18 @@ def evaluate_model(args):
     prc_auc = average_precision_score(val_label, val_out)
     fpr = fpr_at_95_tpr(val_out, val_label)
 
+
+
     print(f'AUPRC score: {prc_auc*100.0}')
     print(f'FPR@TPR95: {fpr*100.0}')
-    print(f'Temperature : {temperature}')
+    # print(f'Temperature : {args.temperature}')
     # SOME EXTRA WRITING ON THE FILE IN ORDER TO BE MORE READABLE
     file.write('############################### ' + str(Dataset_string) + ' ###############################\n')
-    file.write(('Method:' + str(args.method) + '   AUPRC score:' + str(prc_auc*100.0) + '   FPR@TPR95:' + str(fpr*100.0)+ " with Temperature: " + str(temperature)))
+    file.write(('Method:' + str(args.method) + '   AUPRC score:' + str(prc_auc*100.0) + '   FPR@TPR95:' + str(fpr*100.0))+ 'with temperature: ' + str(temperature))
     file.write('\n\n')
     file.close()
 
-    return prc_auc, fpr, temperature
+    return prc_auc, fpr
 
 
 if __name__ == '__main__':

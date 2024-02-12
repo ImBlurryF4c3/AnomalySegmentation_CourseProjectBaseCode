@@ -113,4 +113,3 @@ def getColorEntry(val):
         return colors.CYAN
     else:
         return colors.GREEN
-
