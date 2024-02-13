@@ -340,7 +340,7 @@ def train(args, model, enc=False):
             if args.cuda:
                 images = images.cuda()
                 labels = labels.cuda()
-                model = torch.nn.DataParallel(model).cuda()
+                #model = torch.nn.DataParallel(model).cuda()
                 #model = model.to('cuda:0')
 
 
