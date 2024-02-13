@@ -15,7 +15,7 @@ from argparse import ArgumentParser
 
 from torch.autograd import Variable
 from torch.utils.data import DataLoader
-from eval.otherModel.ENet import ENet
+#from eval.otherModel.ENet import ENet
 from torchvision.transforms import Compose, CenterCrop, Normalize, Resize
 from torchvision.transforms import ToTensor, ToPILImage
 
