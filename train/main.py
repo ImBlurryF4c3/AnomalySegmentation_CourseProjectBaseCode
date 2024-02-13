@@ -357,33 +357,45 @@ def train(args, model, enc=False):
                 loss = criterion(outputs, targets[:, 0])
                 loss.backward()
                 optimizer.step()
-                epoch_loss.append(loss.item())
+                epoch_loss_val.append(loss.item())
 
             elif args.lossfunction == "logit_norm":
                 # Implement Focal Loss calculation using outputs and targets
-                if args.focal_loss == True:
-                    loss = focal_loss(outputs,targets[:, 0])
+                if args.onlyone == False:
+                    if args.focal_loss == True:
+                        loss = loss = focal_loss(outputs,targets[:, 0])
+                    else:
+                        loss = criterion(outputs, targets[:, 0])
+                    logit_norm_loss = normalization_loss(outputs, targets[:, 0])
+                    logit_norm_loss.backward(retain_graph=True)
+                    loss.backward()
+                    optimizer.step()
+                    epoch_loss_val.append(loss.item())
+                    epoch_loss_val.append(logit_norm_loss.item())
                 else:
-                    loss = criterion(outputs, targets[:, 0])
-                logit_norm_loss = normalization_loss(outputs, targets[:, 0])
-                logit_norm_loss.backward(retain_graph=True)
-                loss.backward()
-                optimizer.step()
-                epoch_loss.append(loss.item())
-                epoch_loss.append(logit_norm_loss.item())
+                    logit_norm_loss = normalization_loss(outputs, targets[:, 0])
+                    logit_norm_loss.backward(retain_graph=True)
+                    optimizer.step()
+                    epoch_loss_val.append(logit_norm_loss.item())
+
 
             elif args.lossfunction == "enhanced_isotropy":
                 eim_loss = isotropy_loss(outputs, targets[:, 0])
-                 # Implement Focal Loss calculation using outputs and targets
-                if args.focal_loss == True:
-                    loss = focal_loss(outputs,targets[:, 0])
+                if args.onlyone == False:
+                    # Implement Focal Loss calculation using outputs and targets
+                    if args.focal_loss == True:
+                        loss = loss = focal_loss(outputs,targets[:, 0])
+                    else:
+                        loss = criterion(outputs, targets[:, 0])
+                    eim_loss.backward()
+                    loss.backward()
+                    optimizer.step()
+                    epoch_loss_val.append(eim_loss.item())
+                    epoch_loss_val.append(loss.item())
                 else:
-                    loss = criterion(outputs, targets[:, 0])
-                eim_loss.backward()
-                loss.backward()
-                optimizer.step()
-                epoch_loss.append(eim_loss.item())
-                epoch_loss.append(loss.item())
+                    eim_loss.backward()
+                    optimizer.step()
+                    epoch_loss_val.append(eim_loss.item())
 
 
             time_train.append(time.time() - start_time)
@@ -455,29 +467,41 @@ def train(args, model, enc=False):
 
             elif args.lossfunction == "logit_norm":
                 # Implement Focal Loss calculation using outputs and targets
-                if args.focal_loss == True:
-                    loss = loss = focal_loss(outputs,targets[:, 0])
+                if args.onlyone == False:
+                    if args.focal_loss == True:
+                        loss = loss = focal_loss(outputs,targets[:, 0])
+                    else:
+                        loss = criterion(outputs, targets[:, 0])
+                    logit_norm_loss = normalization_loss(outputs, targets[:, 0])
+                    logit_norm_loss.backward(retain_graph=True)
+                    loss.backward()
+                    optimizer.step()
+                    epoch_loss_val.append(loss.item())
+                    epoch_loss_val.append(logit_norm_loss.item())
                 else:
-                    loss = criterion(outputs, targets[:, 0])
-                logit_norm_loss = normalization_loss(outputs, targets[:, 0])
-                logit_norm_loss.backward(retain_graph=True)
-                loss.backward()
-                optimizer.step()
-                epoch_loss_val.append(loss.item())
-                epoch_loss_val.append(logit_norm_loss.item())
+                    logit_norm_loss = normalization_loss(outputs, targets[:, 0])
+                    logit_norm_loss.backward(retain_graph=True)
+                    optimizer.step()
+                    epoch_loss_val.append(logit_norm_loss.item())
+
 
             elif args.lossfunction == "enhanced_isotropy":
                 eim_loss = isotropy_loss(outputs, targets[:, 0])
-                 # Implement Focal Loss calculation using outputs and targets
-                if args.focal_loss == True:
-                    loss = loss = focal_loss(outputs,targets[:, 0])
+                if args.onlyone == False:
+                    # Implement Focal Loss calculation using outputs and targets
+                    if args.focal_loss == True:
+                        loss = loss = focal_loss(outputs,targets[:, 0])
+                    else:
+                        loss = criterion(outputs, targets[:, 0])
+                    eim_loss.backward()
+                    loss.backward()
+                    optimizer.step()
+                    epoch_loss_val.append(eim_loss.item())
+                    epoch_loss_val.append(loss.item())
                 else:
-                    loss = criterion(outputs, targets[:, 0])
-                eim_loss.backward()
-                loss.backward()
-                optimizer.step()
-                epoch_loss_val.append(eim_loss.item())
-                epoch_loss_val.append(loss.item())
+                    eim_loss.backward()
+                    optimizer.step()
+                    epoch_loss_val.append(eim_loss.item())
 
 
 
@@ -681,6 +705,7 @@ if __name__ == '__main__':
     parser.add_argument('--batch-size', type=int, default=6)
     parser.add_argument('--steps-loss', type=int, default=50)
     parser.add_argument('--steps-plot', type=int, default=50)
+    parser.add_argument('--onlyone', default=True,required=True, help="do you want to analyze the effect of only one loss you define in --lossfunction? Default is true")
     parser.add_argument('--epochs-save', type=int, default=0)    #You can use this value to save model every X epochs
     parser.add_argument('--savedir', required=True)
     parser.add_argument('--decoder', action='store_true')
