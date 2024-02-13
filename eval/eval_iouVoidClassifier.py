@@ -102,7 +102,6 @@ def main(args):
         print ("Error: datadir could not be loaded")
 
     loader = DataLoader(cityscapes(args.datadir, input_transform_cityscapes, target_transform_cityscapes, subset=args.subset), num_workers=args.num_workers, batch_size=args.batch_size, shuffle=False)
-    t_values = [0.01, 0.04, 0.05, 0.08, 0.1] 
     if float(args.temperature) == -1:  # Se temperature è -1, cerca il miglior valore tra t_values
         #best_temperature = find_best_temperature(loader, model, args.cpu, t_values, args.method, args.model)
         #print(f"Best temperature found: {best_temperature}")

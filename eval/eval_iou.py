@@ -86,7 +86,7 @@ def main(args):
     iouEvalVal = iouEval(NUM_CLASSES)
 
     start = time.time()
-
+    #print("Evaluation")
     for step, (images, labels, filename, filenameGt) in enumerate(loader):
         if (not args.cpu):
             images = images.cuda()
