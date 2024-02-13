@@ -189,9 +189,7 @@ def train(args, model, enc=False):
         weights = 1 / (label_counts / total_samples)
 
         return weights
-    
-    
-        
+
     weight = torch.ones(NUM_CLASSES)
     if (enc):
         weight[0] = 2.3653597831726	
@@ -235,7 +233,7 @@ def train(args, model, enc=False):
         weight[18] = 10.138095855713	
 
     weight[19] = 0
-    
+
     assert os.path.exists(args.datadir), "Error: datadir (dataset directory) could not be loaded"
     print("transform")
     co_transform = MyCoTransform(enc, augment=True, height=args.height)#1024)

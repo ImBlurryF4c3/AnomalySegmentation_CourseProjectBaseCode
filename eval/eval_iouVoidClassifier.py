@@ -15,13 +15,14 @@ from argparse import ArgumentParser
 
 from torch.autograd import Variable
 from torch.utils.data import DataLoader
+from eval.otherModel.ENet import ENet
 from torchvision.transforms import Compose, CenterCrop, Normalize, Resize
 from torchvision.transforms import ToTensor, ToPILImage
 
 from dataset import cityscapes
 from otherModel.erfnet import ERFNet
 from otherModel.BiSeNetV1 import BiSeNetV1
-#from otherModel.ENet import ENet
+from otherModel.ENet import ENet
 from transform import Relabel, ToLabel, Colorize
 from iouEval import iouEval, getColorEntry
 
@@ -123,8 +124,11 @@ def main(args):
               
           inputs = Variable(images)
           with torch.no_grad():
-              outputs = model(inputs)[0] #l'alternativa è mettere [1] -> in poche parole, la funzione ritorna una tupla
-              #void_outputs = outputs[:, 19, :, :]  # Select only the output of class 19 (void class) -> se problema qui è perchè non c'è la classe 20 (void)
+              if model == "BiSeNet":
+                outputs = model(inputs)[0] #l'alternativa è mettere [1] -> in poche parole, la funzione ritorna una tupla
+              else:
+                outputs = model(inputs)  
+                #void_outputs = outputs[:, 19, :, :]  # Select only the output of class 19 (void class) -> se problema qui è perchè non c'è la classe 20 (void)
 
           #converti il tensore 3D in un tensore 4D di dimensione [x, 1, y, z]
           #void_outputs = void_outputs.unsqueeze(1)
@@ -138,11 +142,17 @@ def main(args):
           elif args.method == 'maxEntr':
               predicted_labels = torch.argmax(F.softmax(outputs, dim=1), dim=1).unsqueeze(1).data
 
-          predicted_labels_void = torch.where(predicted_labels == 19, 1, 0)
+
+          if model == "ENet":
+              void_index = 0
+          else:
+              void_index = 19
+
+          predicted_labels_void = torch.where(predicted_labels == void_index, 1, 0)
 
 
           #sostituisci tutti i valori sotto 19 in 0 e sostituisci quelli a 19 in 1
-          labels_void = torch.where(labels == 19, 1, 0)
+          labels_void = torch.where(labels == void_index, 1, 0)
           #print(labels_void.size())
         #   labels_void = labels_void[:, 0:1, :, :]
           #la dimensione 1 ora deve avere lunghezza 1 (perchè tanto rappresento solo una classe)
