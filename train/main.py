@@ -357,7 +357,7 @@ def train(args, model, enc=False):
                 loss = criterion(outputs, targets[:, 0])
                 loss.backward()
                 optimizer.step()
-                epoch_loss_val.append(loss.item())
+                epoch_loss.append(loss.item())
 
             elif args.lossfunction == "logit_norm":
                 # Implement Focal Loss calculation using outputs and targets
@@ -370,13 +370,13 @@ def train(args, model, enc=False):
                     logit_norm_loss.backward(retain_graph=True)
                     loss.backward()
                     optimizer.step()
-                    epoch_loss_val.append(loss.item())
-                    epoch_loss_val.append(logit_norm_loss.item())
+                    epoch_loss.append(loss.item())
+                    epoch_loss.append(logit_norm_loss.item())
                 else:
                     logit_norm_loss = normalization_loss(outputs, targets[:, 0])
                     logit_norm_loss.backward(retain_graph=True)
                     optimizer.step()
-                    epoch_loss_val.append(logit_norm_loss.item())
+                    epoch_loss.append(logit_norm_loss.item())
 
 
             elif args.lossfunction == "enhanced_isotropy":
@@ -390,12 +390,12 @@ def train(args, model, enc=False):
                     eim_loss.backward()
                     loss.backward()
                     optimizer.step()
-                    epoch_loss_val.append(eim_loss.item())
-                    epoch_loss_val.append(loss.item())
+                    epoch_loss.append(eim_loss.item())
+                    epoch_loss.append(loss.item())
                 else:
                     eim_loss.backward()
                     optimizer.step()
-                    epoch_loss_val.append(eim_loss.item())
+                    epoch_loss.append(eim_loss.item())
 
 
             time_train.append(time.time() - start_time)
