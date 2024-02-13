@@ -460,8 +460,8 @@ def train(args, model, enc=False):
                 else:
                     loss = criterion(outputs, targets[:, 0])
                 logit_norm_loss = normalization_loss(outputs, targets[:, 0])
-                loss.backward()
                 logit_norm_loss.backward(retain_graph=True)
+                loss.backward()
                 optimizer.step()
                 epoch_loss_val.append(loss.item())
                 epoch_loss_val.append(logit_norm_loss.item())
