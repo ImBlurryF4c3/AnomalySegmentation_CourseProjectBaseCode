@@ -122,6 +122,7 @@ class LogitNormalizationLoss(torch.nn.Module):
 
 
 
+
 #Augmentations - different function implemented to perform random augments on both image and target
 
 class MyCoTransform(object):
@@ -425,6 +426,8 @@ def train(args, model, enc=False):
                 print ("Time to paint images: ", time.time() - start_time_plot)
             if args.steps_loss > 0 and step % args.steps_loss == 0:
                 average = sum(epoch_loss) / len(epoch_loss)
+                #print(sum(epoch_loss))
+                #print(len(epoch_loss))
                 print(f'loss: {average:0.4} (epoch: {epoch}, step: {step})', 
                         "// Avg time/img: %.4f s" % (sum(time_train) / len(time_train) / args.batch_size))
 
@@ -462,26 +465,23 @@ def train(args, model, enc=False):
             if args.lossfunction == "cross_entropy": ########codice di default
                 loss = criterion(outputs, targets[:, 0])
                 loss.backward()
-                optimizer.step()
                 epoch_loss_val.append(loss.item())
 
             elif args.lossfunction == "logit_norm":
                 # Implement Focal Loss calculation using outputs and targets
                 if args.onlyone == False:
                     if args.focal_loss == True:
-                        loss = loss = focal_loss(outputs,targets[:, 0])
+                        loss = focal_loss(outputs,targets[:, 0])
                     else:
                         loss = criterion(outputs, targets[:, 0])
                     logit_norm_loss = normalization_loss(outputs, targets[:, 0])
                     logit_norm_loss.backward(retain_graph=True)
                     loss.backward()
-                    optimizer.step()
                     epoch_loss_val.append(loss.item())
                     epoch_loss_val.append(logit_norm_loss.item())
                 else:
                     logit_norm_loss = normalization_loss(outputs, targets[:, 0])
                     logit_norm_loss.backward(retain_graph=True)
-                    optimizer.step()
                     epoch_loss_val.append(logit_norm_loss.item())
 
 
@@ -495,12 +495,10 @@ def train(args, model, enc=False):
                         loss = criterion(outputs, targets[:, 0])
                     eim_loss.backward()
                     loss.backward()
-                    optimizer.step()
                     epoch_loss_val.append(eim_loss.item())
                     epoch_loss_val.append(loss.item())
                 else:
                     eim_loss.backward()
-                    optimizer.step()
                     epoch_loss_val.append(eim_loss.item())
 
 
@@ -530,6 +528,8 @@ def train(args, model, enc=False):
                 print ("Time to paint images: ", time.time() - start_time_plot)
             if args.steps_loss > 0 and step % args.steps_loss == 0:
                 average = sum(epoch_loss_val) / len(epoch_loss_val)
+                print(sum(epoch_loss_val))
+                print(len(epoch_loss_val))
                 print(f'VAL loss: {average:0.4} (epoch: {epoch}, step: {step})', 
                         "// Avg time/img: %.4f s" % (sum(time_val) / len(time_val) / args.batch_size))
                        
@@ -705,7 +705,7 @@ if __name__ == '__main__':
     parser.add_argument('--batch-size', type=int, default=6)
     parser.add_argument('--steps-loss', type=int, default=50)
     parser.add_argument('--steps-plot', type=int, default=50)
-    parser.add_argument('--onlyone', default=True,required=True, help="do you want to analyze the effect of only one loss you define in --lossfunction? Default is true")
+    parser.add_argument('--onlyone', type= bool,default=True,required=True, help="do you want to analyze the effect of only one loss you define in --lossfunction? Default is true")
     parser.add_argument('--epochs-save', type=int, default=0)    #You can use this value to save model every X epochs
     parser.add_argument('--savedir', required=True)
     parser.add_argument('--decoder', action='store_true')
