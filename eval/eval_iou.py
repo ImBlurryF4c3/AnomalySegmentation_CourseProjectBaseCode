@@ -24,7 +24,7 @@ from erfnet import ERFNet
 import sys
 
 sys.path.insert(0, './otherModel')
-from eval.otherModel.BiSeNetV1 import BiSeNetV1
+from otherModel.BiSeNetV1 import BiSeNetV1
 
 #print('Ha FUNZIONATO')
 ##############################

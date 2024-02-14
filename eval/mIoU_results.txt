@@ -167,3 +167,27 @@ Mean IoU with temperature = 0.05: 0.7220229627099813
 Mean IoU with temperature = 0.08: 0.7220228481231047
 Mean IoU with temperature = 0.1: 0.7220228521884419
 MEAN IoU: 72.20% with method: msp with temperature: 0.05
+================================ Model: ERFNET with logit norm and cross entropy ================================
+Per-Class IoU:
+Road -----> 86.60
+sidewalk -----> 52.43
+building -----> 65.34
+wall -----> 13.10
+fence -----> 0.00
+pole -----> 27.87
+traffic light -----> 10.62
+traffic sign -----> 29.82
+vegetation -----> 77.13
+terrain -----> 31.56
+sky -----> 74.58
+person -----> 40.42
+rider -----> 0.00
+car -----> 74.12
+truck -----> 0.00
+bus -----> 17.51
+train -----> 0.00
+motorcycle -----> 0.00
+bicycle -----> 40.59
+=======================================
+
+MEAN IoU: 33.77% with method: msp with temperature: 1.0
