@@ -174,7 +174,7 @@ Method:msp   AUPRC score:25.10862074170997   FPR@TPR95:93.8677724684054with temp
 Method:msp   AUPRC score:14.41885679797699   FPR@TPR95:93.74697734891345with temperature: 1.0
 
 
-############################### Road Anomaly ###############################
+############################### Road Anomaly 21 ###############################
 Method:msp   AUPRC score:21.68095492913238   FPR@TPR95:92.10641380199792with temperature: 1.0
 
 
