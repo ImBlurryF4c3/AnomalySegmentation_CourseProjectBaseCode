@@ -489,6 +489,8 @@ def train(args, model, enc=False):
     loader = DataLoader(dataset_train, num_workers=args.num_workers, batch_size=args.batch_size, shuffle=True)
     loader_val = DataLoader(dataset_val, num_workers=args.num_workers, batch_size=args.batch_size, shuffle=False)
     print("fine loader_val")
+    if args.cuda:
+        weight = weight.cuda()
     if args.lossfunction == "enhanced_isotropy":
         isotropy_loss = EnhancedIsotropyMaximizationLoss(model,weight)
     elif args.lossfunction == "logit_norm":
@@ -502,8 +504,7 @@ def train(args, model, enc=False):
         focal_loss = FocalLoss()
     else:
       criterion = CrossEntropyLoss2d(weight)
-    if args.cuda:
-        weight = weight.cuda()
+    
     # criterion = CrossEntropyLoss2d(weight)
     # print(type(criterion))
 
