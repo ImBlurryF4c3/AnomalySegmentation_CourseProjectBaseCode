@@ -132,6 +132,7 @@ class JaccardLoss2d(torch.nn.Module):
 
         # weighting the data
         if self.weight is not None:
+          self.weight = self.weight.cuda()
           self.weight = self.weight.view(1, 20, 1, 1)
           outputs = outputs * self.weight
 
