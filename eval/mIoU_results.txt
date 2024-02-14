@@ -191,3 +191,5 @@ bicycle -----> 40.59
 =======================================
 
 MEAN IoU: 33.77% with method: msp with temperature: 1.0
+
+
