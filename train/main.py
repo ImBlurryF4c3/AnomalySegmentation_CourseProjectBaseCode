@@ -120,6 +120,36 @@ class LogitNormalizationLoss(torch.nn.Module):
         loss = torch.nn.functional.cross_entropy(output_prob, target.cuda(), weight=self.weight)
         return loss
 
+class JaccardLoss2d(torch.nn.Module):
+
+    def __init__(self, weight=None):
+        super(JaccardLoss2d, self).__init__()
+        self.weight = weight
+
+    def forward(self, outputs, targets):
+        targets = torch.unsqueeze(targets, dim=1)
+        targets = targets.expand(-1, 20, -1, -1)  # Add channel dimension to targets
+
+        # weighting the data
+        if self.weight is not None:
+          self.weight = self.weight.view(1, 20, 1, 1)
+          outputs = outputs * self.weight
+
+        # Flatten predictions and targets
+        outputs_flat = outputs.reshape(outputs.size()[0], -1)
+        targets_flat = targets.reshape(targets.size()[0], -1)
+
+        # Intersection and union
+        intersection = torch.sum(torch.min(outputs_flat, targets_flat), dim=1, keepdim=True)
+        union = torch.sum(torch.max(outputs_flat, targets_flat), dim=1, keepdim=True)
+
+        jaccard = (intersection + 1e-8) / (union + 1e-8)
+
+        # Average the Jaccard indices along the batches
+        loss = 1 - torch.mean(jaccard)
+
+        return loss
+
 
 
 
@@ -254,6 +284,8 @@ def train(args, model, enc=False):
         isotropy_loss = EnhancedIsotropyMaximizationLoss(model,weight)
     elif args.lossfunction == "logit_norm":
         normalization_loss = LogitNormalizationLoss(weight)
+    elif args.lossfunction == "jaccard_loss":
+        j_loss = JaccardLoss2d(weight)
     else:
       criterion = CrossEntropyLoss2d(weight)
     
@@ -398,6 +430,26 @@ def train(args, model, enc=False):
                     optimizer.step()
                     epoch_loss.append(eim_loss.item())
 
+            elif args.lossfunction == "jaccard_loss":
+                jacc_loss = j_loss(outputs, targets[:, 0])
+                if args.onlyone == False:
+                    # Implement Focal Loss calculation using outputs and targets
+                    if args.focal_loss == True:
+                        loss = loss = focal_loss(outputs,targets[:, 0])
+                    else:
+                        loss = criterion(outputs, targets[:, 0])
+                    jacc_loss.backward()
+                    loss.backward()
+                    optimizer.step()
+                    epoch_loss.append(jacc_loss.item())
+                    epoch_loss.append(loss.item())
+                else:
+                    jacc_loss.backward()
+                    optimizer.step()
+                    epoch_loss.append(jacc_loss.item())
+                    
+
+
 
             time_train.append(time.time() - start_time)
 
@@ -500,6 +552,22 @@ def train(args, model, enc=False):
                 else:
                     eim_loss.backward()
                     epoch_loss_val.append(eim_loss.item())
+            
+            elif args.lossfunction == "jaccard_loss":
+                jacc_loss = j_loss(outputs, targets[:, 0])
+                if args.onlyone == False:
+                    # Implement Focal Loss calculation using outputs and targets
+                    if args.focal_loss == True:
+                        loss = loss = focal_loss(outputs,targets[:, 0])
+                    else:
+                        loss = criterion(outputs, targets[:, 0])
+                    jacc_loss.backward()
+                    loss.backward()
+                    epoch_loss_val.append(jacc_loss.item())
+                    epoch_loss_val.append(loss.item())
+                else:
+                    jacc_loss.backward()
+                    epoch_loss_val.append(jacc_loss.item())
 
 
 
