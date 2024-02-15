@@ -218,3 +218,51 @@ bicycle -----> 34.42
 MEAN IoU: 33.71% with method: msp with temperature: 1.0
 
 ================================ Model: ERFNET with logit norm with focal loss ================================
+
+Per-Class IoU:
+Road -----> 85.68
+sidewalk -----> 49.19
+building -----> 67.87
+wall -----> 13.37
+fence -----> 2.82
+pole -----> 24.07
+traffic light -----> 25.20
+traffic sign -----> 23.14
+vegetation -----> 73.74
+terrain -----> 29.81
+sky -----> 79.43
+person -----> 36.43
+rider -----> 0.58
+car -----> 66.92
+truck -----> 0.00
+bus -----> 15.56
+train -----> 0.00
+motorcycle -----> 6.60
+bicycle -----> 37.44
+=======================================
+MEAN IoU: 33.57% with method: msp with temperature: 1.0
+
+
+================================ Model: ERFNET WITH JACCARD ================================
+Per-Class IoU:
+Road -----> 10.62
+sidewalk -----> 4.92
+building -----> 8.10
+wall -----> 0.01
+fence -----> 1.99
+pole -----> 0.98
+traffic light -----> 28.14
+traffic sign -----> 32.02
+vegetation -----> 8.88
+terrain -----> 0.89
+sky -----> 3.49
+person -----> 13.20
+rider -----> 25.35
+car -----> 10.80
+truck -----> 1.41
+bus -----> 1.79
+train -----> 0.54
+motorcycle -----> 4.67
+bicycle -----> 26.45
+=======================================
+MEAN IoU: 9.70% with method: msp with temperature: 1.0
