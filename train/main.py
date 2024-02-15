@@ -433,7 +433,6 @@ def train(args, model, enc=False):
     
         
     weight = torch.ones(NUM_CLASSES)
-    import torch
 
     weight = torch.tensor([3.0642, 18.5390, 4.9386, 172.3102, 128.4717, 92.0603,
                        540.5732, 203.5701, 7.0822, 97.4938, 28.0326, 92.8699,
