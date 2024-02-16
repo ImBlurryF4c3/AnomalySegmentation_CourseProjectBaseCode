@@ -266,3 +266,28 @@ motorcycle -----> 4.67
 bicycle -----> 26.45
 =======================================
 MEAN IoU: 9.70% with method: msp with temperature: 1.0
+
+================================ Model: ERFNET WITH JACCARD WITH FOCAL LOSS ================================
+
+Per-Class IoU:
+Road -----> 39.43
+sidewalk -----> 7.32
+building -----> 15.45
+wall -----> 3.21
+fence -----> 3.00
+pole -----> 1.25
+traffic light -----> 9.03
+traffic sign -----> 6.67
+vegetation -----> 23.29
+terrain -----> 1.73
+sky -----> 80.40
+person -----> 10.41
+rider -----> 19.70
+car -----> 18.58
+truck -----> 0.73
+bus -----> 2.03
+train -----> 0.23
+motorcycle -----> 13.37
+bicycle -----> 46.56
+=======================================
+MEAN IoU: 15.92% with method: msp with temperature: 1.0
