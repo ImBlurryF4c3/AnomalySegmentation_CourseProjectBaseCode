@@ -295,7 +295,6 @@ MEAN IoU: 15.92% with method: msp with temperature: 1.0
 
 ================================ Model: ERFNET WITH JACCARD WITH CROSS ENTROPY  ================================
 
-================================ Model: ERFNET ================================
 Per-Class IoU:
 Road -----> 19.95
 sidewalk -----> 6.72
@@ -318,3 +317,126 @@ motorcycle -----> 10.26
 bicycle -----> 35.34
 =======================================
 MEAN IoU: 15.24% with method: msp with temperature: 1.0
+
+
+================================ Model: ERFNET punto 3 ================================
+Per-Class IoU:
+Road -----> 85.16
+sidewalk -----> 48.03
+building -----> 62.41
+wall -----> 15.87
+fence -----> 13.15
+pole -----> 22.52
+traffic light -----> 9.92
+traffic sign -----> 26.89
+vegetation -----> 75.27
+terrain -----> 35.33
+sky -----> 79.72
+person -----> 38.21
+rider -----> 23.28
+car -----> 73.05
+truck -----> 5.58
+bus -----> 23.59
+train -----> 1.32
+motorcycle -----> 11.76
+bicycle -----> 35.71
+=======================================
+MEAN IoU: 36.15% with method: msp with temperature: 1.0
+
+
+############## ENET PUNTO 3############
+================================ Model:ENet con modello originale e eval su 19 classi ================================
+Per-Class IoU:
+Road -----> 95.91
+sidewalk -----> 72.92
+building -----> 85.84
+wall -----> 44.04
+fence -----> 37.41
+pole -----> 45.47
+traffic light -----> 43.29
+traffic sign -----> 54.01
+vegetation -----> 87.61
+terrain -----> 53.22
+sky -----> 89.87
+person -----> 60.45
+rider -----> 42.01
+car -----> 87.52
+truck -----> 44.98
+bus -----> 56.01
+train -----> 29.63
+motorcycle -----> 24.61
+bicycle -----> 58.67
+=======================================
+MEAN IoU: 58.60% with method: maxLogit with temperature: 1.0
+
+================================ Model:BiSeNet con modello fine tuning  ================================
+Per-Class IoU:
+Road -----> 79.62
+sidewalk -----> 30.61
+building -----> 47.52
+wall -----> 1.53
+fence -----> 13.81
+pole -----> 12.81
+traffic light -----> 1.92
+traffic sign -----> 11.20
+vegetation -----> 21.12
+terrain -----> 4.04
+sky -----> 47.51
+person -----> 31.79
+rider -----> 0.14
+car -----> 55.61
+truck -----> 3.12
+bus -----> 11.19
+train -----> 8.33
+motorcycle -----> 0.06
+bicycle -----> 23.03
+=======================================
+MEAN IoU: 21.31% with method: maxLogit with temperature: 1.0
+
+================================ Model:ENet con modello pretrainato e reitranato su 20 classi per 280 epoche (+ 30 rispetto al best model) ================================
+Per-Class IoU:
+Road -----> 40.81
+sidewalk -----> 0.32
+building -----> 16.91
+wall -----> 0.44
+fence -----> 0.82
+pole -----> 2.88
+traffic light -----> 0.50
+traffic sign -----> 0.05
+vegetation -----> 0.00
+terrain -----> 0.00
+sky -----> 1.46
+person -----> 0.00
+rider -----> 0.00
+car -----> 0.00
+truck -----> 0.16
+bus -----> 5.53
+train -----> 0.04
+motorcycle -----> 0.00
+bicycle -----> 0.00
+=======================================
+MEAN IoU: 3.68% with method: msp with temperature: 1.0
+
+================================ Model:BiSeNet  con modello pretrainato e reitranato su 20 classi  ================================
+Per-Class IoU:
+Road -----> 84.48
+sidewalk -----> 40.80
+building -----> 71.29
+wall -----> 2.92
+fence -----> 14.63
+pole -----> 20.58
+traffic light -----> 12.95
+traffic sign -----> 33.59
+vegetation -----> 69.15
+terrain -----> 21.53
+sky -----> 82.61
+person -----> 43.55
+rider -----> 8.34
+car -----> 69.18
+truck -----> 15.20
+bus -----> 7.79
+train -----> 21.14
+motorcycle -----> 4.81
+bicycle -----> 35.24
+=======================================
+MEAN IoU: 34.73% with method: msp with temperature: 1.0

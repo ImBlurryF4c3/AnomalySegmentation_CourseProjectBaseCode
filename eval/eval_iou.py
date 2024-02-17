@@ -25,7 +25,7 @@ import sys
 
 sys.path.insert(0, './otherModel')
 from otherModel.BiSeNetV1 import BiSeNetV1
-
+from otherModel.ENet import ENet
 #print('Ha FUNZIONATO')
 ##############################
 from transform import Relabel, ToLabel, Colorize
@@ -52,28 +52,52 @@ def main(args):
 
     print ("Loading model: " + modelpath)
     print ("Loading weights: " + weightspath)
+    
+    if str(args.model) == "ERFNet":
+        model = ERFNet(NUM_CLASSES)
+    elif str(args.model) == "BiSeNet":
+         model = BiSeNetV1(NUM_CLASSES)
+    elif str(args.model) == "ENet":
+        print(args.model)
+        model = ENet(NUM_CLASSES)
+    else:
+      raise Exception("Model Not found")
 
-    model = ERFNet(NUM_CLASSES)
+    #model = ERFNet(NUM_CLASSES)
     #model = torch.nn.DataParallel(model)
     if (not args.cpu):
         model = torch.nn.DataParallel(model).cuda()
 
-    def load_my_state_dict(model, state_dict):  #custom function to load model when not all dict elements
-        own_state = model.state_dict()
-        for name, param in state_dict.items():
-            if name not in own_state:
-                if name.startswith("module."):
-                    own_state[name.split("module.")[-1]].copy_(param)
-                else:
-                    print(name, " not loaded")
-                    continue
-            else:
-                own_state[name].copy_(param)
-        return model
+    def load_my_state_dict(model, state_dict, model_name):
+      if model_name == 'ERFNet' :
+          own_state = model.state_dict()
+          for name, param in state_dict.items():
+              if name not in own_state:
+                  if name.startswith("module."):
+                      own_state[name.split("module.")[-1]].copy_(param)
+                  else:
+                      print(name, " not loaded")
+                      continue
+              else:
+                  own_state[name].copy_(param)
+      else:
+          model = model.load_state_dict(state_dict)
+      return model
 
-    model = load_my_state_dict(model, torch.load(weightspath, map_location=lambda storage, loc: storage))
-    print ("Model and weights LOADED successfully")
+    state_dict =  torch.load(weightspath, map_location=lambda storage, loc: storage)
 
+
+
+    if args.model == 'BiSeNet':
+        state_dict = {f"module.{k}": v if not k.startswith("module.") else v for k, v in state_dict.items()}
+        model.load_state_dict(state_dict)
+    elif args.model == 'ENet':
+        state_dict = state_dict['state_dict']
+        state_dict = {f"module.{k}": v if not k.startswith("module.") else v for k, v in state_dict.items()}
+        model.load_state_dict(state_dict)
+    else:
+        model = load_my_state_dict(model, state_dict, args.model)
+    print("Model and weights LOADED successfully")
     model.eval()
 
     if(not os.path.exists(args.datadir)):
@@ -94,7 +118,13 @@ def main(args):
 
         inputs = Variable(images)
         with torch.no_grad():
-            outputs = model(inputs)
+              if str(args.model) == "BiSeNet":
+                outputs = model(inputs)[0] #l'alternativa è mettere [1] -> in poche parole, la funzione ritorna una tupla
+              elif str(args.model )== "ENet":
+                outputs = model(inputs)[:, 1:20, :, :] 
+              else: 
+                outputs = model(inputs) 
+                #void_outputs = outputs[:, 19, :, :]  # Select only the output of class 19 (void class) -> se problema qui è perchè non c'è la classe 20 (void)
 
         # Seleziona le previsioni del modello in base al metodo specificato dalla riga di comando
         if args.method == 'msp':
@@ -127,7 +157,7 @@ def main(args):
 
     print("---------------------------------------")
     print("Took ", time.time()-start, "seconds")
-    file.write("================================ Model: ERFNET ================================\n")
+    file.write("================================ Model:"+ str(args.model) + " ================================\n")
     #print("TOTAL IOU: ", iou * 100, "%")
     file.write("Per-Class IoU:\n")
     file.write("Road -----> " + iou_classes_str[0])
@@ -170,5 +200,6 @@ if __name__ == '__main__':
     parser.add_argument('--cpu', action='store_true')
     parser.add_argument('--method', default='msp')  # Aggiunge l'argomento method con valore predefinito 'msp'
     parser.add_argument('--temperature', type=float, default=1.0)  # Aggiunge l'argomento temperature con valore predefinito 1
-    
+    parser.add_argument('--model', type=str, default="BiSeNet")
+
     main(parser.parse_args())

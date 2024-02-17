@@ -24,6 +24,6 @@ VOID -----> 14.77
 MEAN IoU: 17.15% with method: maxLogit with temperature: 1.0
 
 
----------------------------------------ERFNET---------------------------------------
+---------------------------------------ERFNET con modello pretrainato su 19 classi ---------------------------------------
 
-
+MEAN IoU: 75.16% with method: maxLogit with temperature: 1.0
