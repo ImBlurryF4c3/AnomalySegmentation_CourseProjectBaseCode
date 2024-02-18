@@ -36,11 +36,11 @@ For this step, we modify the [main.py](train/main.py) file in order to implement
 
 ## Command used
 
-All the command used in the evaluation part can be found into [googleColab] (Project_Evaluation.ipynb) file, for the training part the files can be found into [training_file](training_file) folder.
+All the command used in the evaluation part can be found into [googleColab](Project_Evaluation.ipynb) file, for the training part the files can be found into [training_file](training_file) folder.
 
 ## Project Presentation
 
-Our presentation related to this project can be found at [Project Presentation] () link.
+Our presentation related to this project can be found at [Project Presentation]() link.
 
 
 
