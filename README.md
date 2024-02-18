@@ -46,9 +46,6 @@ The results can be found into [results_loss.txt](eval/results_eval/results_loss.
 
 All the command used in the evaluation part can be found into [googleColab](Project_Evaluation.ipynb) file, for the training part the files can be found into [training_file](training_file) folder.
 
-## Project Presentation
-
-Our presentation related to this project can be found at [Project Presentation]() link.
 
 
 
