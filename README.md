@@ -10,6 +10,9 @@ The goal for this step is to evaluate a proposed anomaly segmentation method for
 Three different methods are used for the evaluation: MSP, maxLogit, and maxEntr.
 The code for the inference analysis can be found in eval folder and in [evalAnomaly.py](eval/evalAnomaly.py) file, the code for the mIou analysis can be found in eval folder in the [eval_iou.py](eval/eval_iou.py) file.
 
+The results can be found into [results_msp_ml_me.txt](eval/results_eval/results_table1.txt) file for the inference and into [miou_msp_ml_me](eval/results_miou/results_msp_ml_me.txt) file for the miou.
+
+
 ## Baselines - Temperature Scaling
 
 The goal for the second step of our project is to find the optimal temperature for a neural classification model that minimizes the calibration error and the negative log-likelihood of the predictions.
@@ -18,6 +21,7 @@ The result is a more calibrated model that can output more reliable probabilitie
 
 The code for this part is avaible in [evalAnomaly.py](eval/evalAnomaly.py) and [eval_iou.py](eval/eval_iou.py) file, in order to choose the best temperature we use the code in [temperature_scaling.py](eval/temperature_scaling.py).
 
+The results we obtain can be found into [results_temperature.txt](eval/results_eval/results_temperature.txt) file for the inference and into [miou_temperature.txt](eval/results_miou/miou_temperature.txt) file for the miou.
 
 ## Void Classifier
 
@@ -27,12 +31,16 @@ We use the Cityscapes with the void class as a source of anomaly data and train 
 The code for ENet and BiSeNet can be found respectivelly into [ENet-Github](https://github.com/federicamato00/PyTorch-ENet-Training.git) and [BiSeNet-Github](https://github.com/federicamato00/BiSeNet-Training.git) repositories.
 For our evaluation we used the code into [eval_voidClassifier.py](eval/eval_voidClassifier.py) and [eval_iou.py](eval/eval_iou.py) file.
 
+The results can be found into [results_void.txt](eval/results_eval/results_void.txt) file for the inference and into [miou_void.txt](eval/results_miou/miou_void.txt) file for the miou.
+
 
 ## Project Extention - Effect of Training Loss function
 
 We explore different loss functions that are designed for anomaly detection, such as Jaccard Loss and Logit Normalization Loss, investigating how combining these loss functions with other common ones, such as Focal Loss and Cross-Entropy Loss, affects the model’s performance in segmenting and identifying anomalies in road scenes.
 
 For this step, we modify the [main.py](train/main.py) file in order to implement this new loss functions.
+
+The results can be found into [results_loss.txt](eval/results_eval/results_loss.txt) file for the inference and into [miou_loss.txt](eval/results_miou/miou_loss.txt) file for the miou.
 
 ## Command used
 
