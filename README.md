@@ -15,7 +15,7 @@ The code for the inference analysis can be found in eval folder and in [evalAnom
 The goal for the second step of our project is to find the optimal temperature for a neural classification model that minimizes the calibration error and the negative log-likelihood of the predictions.
 The method is to use a validation dataset and an optimization algorithm to tune the temperature parameter that scales the model outputs.
 The result is a more calibrated model that can output more reliable probabilities and predictions.
-The code for this part is avaible in [evalAnomaly.py](eval/evalAnomaly.py) and [[eval_iou.py](eval/eval_iou.py) file, in order to choose the best temperature we use the code in [temperature_scaling.py](eval/temperature_scaling.py).
+The code for this part is avaible in [evalAnomaly.py](eval/evalAnomaly.py) and [eval_iou.py](eval/eval_iou.py) file, in order to choose the best temperature we use the code in [temperature_scaling.py](eval/temperature_scaling.py).
 
 For this step we use 
 
