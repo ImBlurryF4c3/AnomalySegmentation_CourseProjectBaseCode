@@ -22,14 +22,23 @@ The code for this part is avaible in [evalAnomaly.py](eval/evalAnomaly.py) and [
 
 For this step we provide a method for anomaly detection using a semantic segmentation network with an extra class for anomalies.
 We use the Cityscapes with the void class as a source of anomaly data and train two networks, ENet and BiSeNet, with this method.
-The code for ENet and BiSeNet can be found respectivelly into [[ENet-Github](https://github.com/federicamato00/PyTorch-ENet-Training.git)] and [[BiSeNet-Github](https://github.com/federicamato00/BiSeNet-Training.git)] repositories.
+The code for ENet and BiSeNet can be found respectivelly into [ENet-Github](https://github.com/federicamato00/PyTorch-ENet-Training.git) and [BiSeNet-Github](https://github.com/federicamato00/BiSeNet-Training.git) repositories.
 For our evaluation we used the code into [eval_voidClassifier.py](eval/eval_voidClassifier.py) and [eval_iou.py](eval/eval_iou.py) file.
 
 
 ## Project Extention - Effect of Training Loss function
 
+We explore different loss functions that are designed for anomaly detection, such as Jaccard Loss and Logit Normalization Loss, investigating how combining these loss functions with other common ones, such as Focal Loss and Cross-Entropy Loss, affects the model’s performance in segmenting and identifying anomalies in road scenes.
 
+For this step, we modify the [main.py](train/main.py) file in order to implement this new loss functions.
 
+## Command used
+
+All the command used in the evaluation part can be found into [googleColab] (Project_Evaluation.ipynb) file, for the training part the files can be found into [training_file](training_file) folder.
+
+## Project Presentation
+
+Our presentation related to this project can be found at [Project Presentation] () link.
 
 
 
