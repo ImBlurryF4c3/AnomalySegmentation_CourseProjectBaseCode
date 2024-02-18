@@ -9,7 +9,7 @@ This repository provides a code for the Real-Time Anomaly Segmentation project o
 The goal for this step is to evaluate a proposed anomaly segmentation method for urban scenes using a pre-trained ERF-Net model and a test dataset.
 The evaluation involves running the model on the test dataset and analyzing its performance in detecting anomalies.
 Three different methods are used for the evaluation: MSP, maxLogit, and maxEntr.
-The code for this analysis can be found in eval folder and in [eval](evalAnomaly.py) file.
+The code for this analysis can be found in eval folder and in [eval/evalAnomaly](evalAnomaly.py) file.
 
 ## Requirements:
 
