@@ -17,9 +17,13 @@ The method is to use a validation dataset and an optimization algorithm to tune 
 The result is a more calibrated model that can output more reliable probabilities and predictions.
 The code for this part is avaible in [evalAnomaly.py](eval/evalAnomaly.py) and [eval_iou.py](eval/eval_iou.py) file, in order to choose the best temperature we use the code in [temperature_scaling.py](eval/temperature_scaling.py).
 
-For this step we use 
 
 ## Void Classifier
+
+For this step we provide a method for anomaly detection using a semantic segmentation network with an extra class for anomalies.
+We use the Cityscapes with the void class as a source of anomaly data and train two networks, ENet and BiSeNet, with this method.
+The code for ENet and BiSeNet can be found respectivelly into [[ENet-Github](https://github.com/federicamato00/PyTorch-ENet-Training.git)] and [[BiSeNet-Github](https://github.com/federicamato00/BiSeNet-Training.git)] repositories.
+For our evaluation we used the code into [eval_voidClassifier.py](eval/eval_voidClassifier.py) and [eval_iou.py](eval/eval_iou.py) file.
 
 
 ## Project Extention - Effect of Training Loss function
