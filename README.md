@@ -1,13 +1,15 @@
 # Real-Time-Anomaly-Segmentation [[Course Project](https://docs.google.com/document/d/1ElljsAprT2qX8RpePSQ3E00y_3oXrtN_CKYC6wqxyFQ/edit?usp=sharing)]
-This repository provides a starter-code setup for the Real-Time Anomaly Segmentation project of the Machine Learning Course. It consists of the code base for training ERFNet on the Cityscapes dataset and perform anomaly segmentation.
+This repository provides a code for the Real-Time Anomaly Segmentation project of the Machine Learning Course. This code is submitted for the 27/02/2024 exam by:
+* Marco Colangelo, s309798
+* Federica Aamato, s310275
+* Roberto Pulvirenti, s317704
 
-## Packages
-For instructions, please refer to the README in each folder:
+## Baselines
 
-* [train](train) contains tools for training the network for semantic segmentation.
-* [eval](eval) contains tools for evaluating/visualizing the network's output and performing anomaly segmentation.
-* [imagenet](imagenet) Contains script and model for pretraining ERFNet's encoder in Imagenet.
-* [trained_models](trained_models) Contains the trained models used in the papers. 
+The goal for this step is to evaluate a proposed anomaly segmentation method for urban scenes using a pre-trained ERF-Net model and a test dataset.
+The evaluation involves running the model on the test dataset and analyzing its performance in detecting anomalies.
+Three different methods are used for the evaluation: MSP, maxLogit, and maxEntr.
+The code for this analysis can be found in eval folder and in [eval](evalAnomaly.py) file.
 
 ## Requirements:
 
