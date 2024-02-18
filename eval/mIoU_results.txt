@@ -440,3 +440,77 @@ motorcycle -----> 4.81
 bicycle -----> 35.24
 =======================================
 MEAN IoU: 34.73% with method: msp with temperature: 1.0
+
+
+
+########################## NUOVI MODELLI SU 20 CLASSI ########################
+
+================================ Model:ENet ================================
+Per-Class IoU:
+Road -----> 37.17
+sidewalk -----> 0.00
+building -----> 2.36
+wall -----> 4.27
+fence -----> 2.03
+pole -----> 2.94
+traffic light -----> 0.62
+traffic sign -----> 0.40
+vegetation -----> 1.95
+terrain -----> 0.00
+sky -----> 0.00
+person -----> 14.76
+rider -----> 0.78
+car -----> 2.94
+truck -----> 2.21
+bus -----> 0.41
+train -----> 0.03
+motorcycle -----> 0.83
+bicycle -----> 0.01
+=======================================
+MEAN IoU: 3.88% with method: msp with temperature: 1.0
+================================ Model:BiSeNet ================================
+Per-Class IoU:
+Road -----> 79.57
+sidewalk -----> 53.99
+building -----> 67.05
+wall -----> 19.91
+fence -----> 30.23
+pole -----> 24.99
+traffic light -----> 15.43
+traffic sign -----> 36.19
+vegetation -----> 78.61
+terrain -----> 38.61
+sky -----> 80.24
+person -----> 52.20
+rider -----> 27.42
+car -----> 74.81
+truck -----> 14.28
+bus -----> 29.97
+train -----> 4.65
+motorcycle -----> 8.58
+bicycle -----> 45.15
+=======================================
+MEAN IoU: 41.15% with method: msp with temperature: 1.0
+================================ Model:ERFNet ================================
+Per-Class IoU:
+Road -----> 91.19
+sidewalk -----> 74.19
+building -----> 79.88
+wall -----> 43.58
+fence -----> 45.63
+pole -----> 44.84
+traffic light -----> 21.53
+traffic sign -----> 51.47
+vegetation -----> 86.47
+terrain -----> 48.33
+sky -----> 85.01
+person -----> 61.71
+rider -----> 39.38
+car -----> 89.31
+truck -----> 40.49
+bus -----> 52.85
+train -----> 23.55
+motorcycle -----> 31.57
+bicycle -----> 57.15
+=======================================
+MEAN IoU: 56.22% with method: msp with temperature: 1.0

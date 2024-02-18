@@ -162,10 +162,6 @@ Method:msp   AUPRC score:1.6867154726322102   FPR@TPR95:91.655856645395with temp
 
 ####################EFNET CON LOGIT NORM #########################
 
-
-
-
-
 ############################### Lost & Found ###############################
 Method:msp   AUPRC score:25.10862074170997   FPR@TPR95:93.8677724684054with temperature: 1.0
 

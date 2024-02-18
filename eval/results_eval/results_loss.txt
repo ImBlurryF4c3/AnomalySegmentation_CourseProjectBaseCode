@@ -1,0 +1,133 @@
+########################################## ERFNET logit norm con cross entropy ####################
+
+
+############################### Lost & Found ###############################
+Method:msp   AUPRC score:18.721096984348808   FPR@TPR95:93.21363656166693with temperature: 1.0
+
+
+############################### Road Anomaly ###############################
+Method:msp   AUPRC score:11.172561803521544   FPR@TPR95:91.02544245714579with temperature: 1.0
+
+
+############################### Road Anomaly 21 ###############################
+Method:msp   AUPRC score:20.727496090014007   FPR@TPR95:90.51133910372586with temperature: 1.0
+
+
+############################### Road Obstacle 21 ###############################
+Method:msp   AUPRC score:0.7179182056010428   FPR@TPR95:96.78966721656074with temperature: 1.0
+
+
+############################### FS Static ###############################
+Method:msp   AUPRC score:1.6867154726322102   FPR@TPR95:91.655856645395with temperature: 1.0
+
+
+####################EFNET CON LOGIT NORM #########################
+
+############################### Lost & Found ###############################
+Method:msp   AUPRC score:25.10862074170997   FPR@TPR95:93.8677724684054with temperature: 1.0
+
+
+############################### Road Anomaly ###############################
+Method:msp   AUPRC score:14.41885679797699   FPR@TPR95:93.74697734891345with temperature: 1.0
+
+
+############################### Road Anomaly 21 ###############################
+Method:msp   AUPRC score:21.68095492913238   FPR@TPR95:92.10641380199792with temperature: 1.0
+
+
+############################### Road Obstacle 21 ###############################
+Method:msp   AUPRC score:0.6527818487731762   FPR@TPR95:95.11288198428696with temperature: 1.0
+
+
+############################### FS Static ###############################
+Method:msp   AUPRC score:1.9117363730317714   FPR@TPR95:96.73489373480074with temperature: 1.0
+
+
+#################### EFNET CON LOGIT NORM E FOCAL LOSS #########################
+
+
+############################### Lost & Found ###############################
+Method:msp   AUPRC score:21.781483958165673   FPR@TPR95:85.37293181275815 with temperature: 1.0
+
+
+############################### Road Anomaly ###############################
+Method:msp   AUPRC score:16.390477473228028   FPR@TPR95:87.12418632484412 with temperature: 1.0
+
+
+############################### Road Anomaly 21 ###############################
+Method:msp   AUPRC score:32.72427634200539   FPR@TPR95:79.28780944626 with temperature: 1.0
+
+
+############################### Road Obstacle 21 ###############################
+Method:msp   AUPRC score:2.728096680023626   FPR@TPR95:96.39035551374377 with temperature: 1.0
+
+
+############################### FS Static ###############################
+Method:msp   AUPRC score:1.4575439315726828   FPR@TPR95:99.02695465015601 with temperature: 1.0
+
+#################### EFNET CON JACCARD #########################
+
+
+############################### Road Anomaly ###############################
+Method:msp   AUPRC score:10.521136369428048   FPR@TPR95:94.49983494840926with temperature: 1.0
+
+
+
+############################### Road Obstacle 21 ###############################
+Method:msp   AUPRC score:0.6675885024663302   FPR@TPR95:95.07551915317045with temperature: 1.0
+
+
+############################### FS Static ###############################
+Method:msp   AUPRC score:2.148743221250405   FPR@TPR95:94.93700251822894with temperature: 1.0
+
+
+############################### Road Anomaly 21 ###############################
+Method:msp   AUPRC score:14.796949471899506   FPR@TPR95:95.00500483941876with temperature: 1.0
+
+############################### Lost & Found ###############################
+Method:msp   AUPRC score:20.442025121524747   FPR@TPR95:94.30968706247089with temperature: 1.0
+
+
+#################### EFNET WITH JACCARD WITH FOCAL LOSS #########################
+
+############################### Lost & Found ###############################
+Method:msp   AUPRC score:17.75869995810948   FPR@TPR95:95.07676229104823with temperature: 1.0
+
+
+############################### Road Anomaly ###############################
+Method:msp   AUPRC score:10.82439035805406   FPR@TPR95:94.46443539839423with temperature: 1.0
+
+
+############################### Road Anomaly 21 ###############################
+Method:msp   AUPRC score:14.464815574200749   FPR@TPR95:95.17066367434104with temperature: 1.0
+
+
+############################### Road Obstacle 21 ###############################
+Method:msp   AUPRC score:0.6605631024819608   FPR@TPR95:95.1768704572843with temperature: 1.0
+
+
+############################### FS Static ###############################
+Method:msp   AUPRC score:3.3925019811617045   FPR@TPR95:91.37963953096471with temperature: 1.0
+
+
+#################### EFNET WITH JACCARD WITH CROSS ENTROPY #########################
+
+
+############################### Lost & Found ###############################
+Method:msp   AUPRC score:19.789352332074852   FPR@TPR95:94.67733918673184with temperature: 1.0
+
+
+############################### Road Anomaly ###############################
+Method:msp   AUPRC score:10.56975764102039   FPR@TPR95:94.5608387925744with temperature: 1.0
+
+
+############################### Road Anomaly 21 ###############################
+Method:msp   AUPRC score:14.75044128444711   FPR@TPR95:94.98178100666527with temperature: 1.0
+
+
+############################### Road Obstacle 21 ###############################
+Method:msp   AUPRC score:0.6463030595724116   FPR@TPR95:95.43477428717577with temperature: 1.0
+
+
+############################### FS Static ###############################
+Method:msp   AUPRC score:2.0760701242433988   FPR@TPR95:94.72747937162787with temperature: 1.0

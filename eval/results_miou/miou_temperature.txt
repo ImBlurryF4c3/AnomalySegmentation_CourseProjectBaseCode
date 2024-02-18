@@ -1,0 +1,73 @@
+================================ Model: ERFNET ================================
+Per-Class IoU:
+Road -----> 97.62
+sidewalk -----> 81.37
+building -----> 90.77
+wall -----> 49.43
+fence -----> 54.93
+pole -----> 60.81
+traffic light -----> 62.60
+traffic sign -----> 72.32
+vegetation -----> 91.35
+terrain -----> 60.97
+sky -----> 93.38
+person -----> 76.11
+rider -----> 53.45
+car -----> 92.91
+truck -----> 72.78
+bus -----> 78.87
+train -----> 63.86
+motorcycle -----> 46.41
+bicycle -----> 71.89
+=======================================
+MEAN IoU: 72.20% with method: msp with temperature: 0.5
+
+
+================================ Model: ERFNET ================================
+Per-Class IoU:
+Road -----> 97.62
+sidewalk -----> 81.37
+building -----> 90.77
+wall -----> 49.43
+fence -----> 54.93
+pole -----> 60.81
+traffic light -----> 62.60
+traffic sign -----> 72.32
+vegetation -----> 91.35
+terrain -----> 60.97
+sky -----> 93.38
+person -----> 76.11
+rider -----> 53.45
+car -----> 92.91
+truck -----> 72.78
+bus -----> 78.87
+train -----> 63.86
+motorcycle -----> 46.41
+bicycle -----> 71.89
+=======================================
+MEAN IoU: 72.20% with method: msp with temperature: 0.75
+
+
+================================ Model: ERFNET ================================
+Per-Class IoU:
+Road -----> 97.62
+sidewalk -----> 81.37
+building -----> 90.77
+wall -----> 49.43
+fence -----> 54.93
+pole -----> 60.81
+traffic light -----> 62.60
+traffic sign -----> 72.32
+vegetation -----> 91.35
+terrain -----> 60.97
+sky -----> 93.38
+person -----> 76.11
+rider -----> 53.45
+car -----> 92.91
+truck -----> 72.78
+bus -----> 78.87
+train -----> 63.86
+motorcycle -----> 46.41
+bicycle -----> 71.89
+=======================================
+MEAN IoU: 72.20% with method: msp with temperature: 1.1
