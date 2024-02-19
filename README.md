@@ -10,7 +10,7 @@ The goal for this step is to evaluate a proposed anomaly segmentation method for
 Three different methods are used for the evaluation: MSP, maxLogit, and maxEntr.
 The code for the inference analysis can be found in eval folder and in [evalAnomaly.py](eval/evalAnomaly.py) file, the code for the mIou analysis can be found in eval folder in the [eval_iou.py](eval/eval_iou.py) file.
 
-The results can be found into [results_msp_ml_me.txt](eval/results_eval/results_table1.txt) file for the inference and into [miou_msp_ml_me](eval/results_miou/results_msp_ml_me.txt) file for the miou.
+The results can be found into [results_msp_ml_me.txt](eval/results_eval/results_table1.txt) file for the inference and into [miou_msp_ml_me](eval/results_miou/miou_msp_ml_me.txt) file for the miou.
 
 
 ## Baselines - Temperature Scaling
